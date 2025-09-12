@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  browserless:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-09-12T17:08:51.262866539Z"
+    description: A Helm chart for Kubernetes
+    digest: f443b62290d7b7e482b1cae7266d2398fafbdfb20fba57d305321830b1f8d42f
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - browserless
+    - chrome
+    - playwright
+    - selenium
+    - puppeteer
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: browserless
+    sources:
+    - https://github.com/browserless/chrome
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/browserless-0.1.0/browserless-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-09-12T17:08:51.262885515Z"
