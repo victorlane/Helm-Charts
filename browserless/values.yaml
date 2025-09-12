@@ -1,0 +1,51 @@
+replicaCount: 1
+
+image:
+  repository: browserless/chrome
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+volumes: []
+volumeMounts: []
+
+envFrom: []
+env: {}
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  annotations: {}
+  type: ClusterIP
+  loadBalancerIP:
+  loadBalancerSourceRanges: []
+  port: 80
+  nodePort:
+  externalTrafficPolicy:
+
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
