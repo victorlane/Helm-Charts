@@ -55,13 +55,18 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
-          # livenessProbe:
-          #   tcpSocket:
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /pressure
-          #     port: http
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            httpGet:
+            {{- if .Values.env.TOKEN }}
+              path: /pressure?token={{ .Values.env.TOKEN | urlquery }}
+            {{- else }}
+              path: /pressure
+            {{- end }}
+              port: http
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
