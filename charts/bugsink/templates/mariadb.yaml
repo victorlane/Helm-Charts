@@ -56,6 +56,11 @@ spec:
                   key: db-password
           ports:
             - containerPort: 3306
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 2
+            periodSeconds: 2
           resources:
 {{- toYaml .Values.bugsink.mariadb.resources | nindent 12 }}
 {{- end }}

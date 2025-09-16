@@ -21,6 +21,31 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}  
+      {{- /* If using the chart-managed MariaDB (no external DATABASE_URL provided, or mariadb.enabled=true), wait for DB */ -}}
+      {{- $dbSec := default (dict "secretName" "" "value" "") .Values.bugsink.secrets.DATABASE_URL -}}
+      {{- if or (and (not $dbSec.secretName) (not $dbSec.value)) .Values.bugsink.mariadb.enabled }}
+      initContainers:
+        - name: wait-for-mariadb
+          image: {{ .Values.bugsink.mariadb.image }}
+          command: ["/bin/sh","-c"]
+          args:
+            - >
+              until mariadb -h {{ .Release.Name }}-mariadb \
+                -u"$(cat /secrets/db-username)" \
+                -p"$(cat /secrets/db-password)" \
+                -e "SELECT 1" "$(cat /secrets/db-name)"; do
+                echo "Waiting for MariaDB...";
+                sleep 2;
+              done
+          volumeMounts:
+            - name: db-secret
+              mountPath: /secrets
+              readOnly: true
+      volumes:
+        - name: db-secret
+          secret:
+            secretName: {{ printf "%s-db" .Release.Name }}
+      {{- end }}
       containers:
         - name: bugsink
           image: "{{ .Values.bugsink.image.repository }}:{{ .Values.bugsink.image.tag }}"
