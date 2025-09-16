@@ -3,6 +3,29 @@ entries:
   browserless:
   - apiVersion: v2
     appVersion: v2.34.1
+    created: "2025-09-16T16:30:37.442297093Z"
+    description: Helm Chart to deploy Browserless
+    digest: 88ce56e7c1b7f56bea86898afb3b350a95453638660c7985078b3e4654ae8ec5
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - browserless
+    - chrome
+    - playwright
+    - selenium
+    - puppeteer
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: browserless
+    sources:
+    - https://github.com/browserless/chrome
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/browserless-0.1.2/browserless-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: v2.34.1
     created: "2025-09-16T16:22:17.341188277Z"
     description: Helm Chart to deploy Browserless
     digest: a7260ad2f0568d8b8e6a06f62357c2eba7ac56191e670b60efa63b40db495f37
@@ -50,6 +73,27 @@ entries:
   bugsink:
   - apiVersion: v2
     appVersion: "2"
+    created: "2025-09-16T16:30:37.603639546Z"
+    description: Unofficial Bugsink Helm Chart
+    digest: 827dba0208c2b0166ae4f15c867fe7dd8e787ed3f37b6ce991651ecd8eba286a
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - bugsink
+    - sentry
+    - error tracking
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: bugsink
+    sources:
+    - https://github.com/bugsink/bugsink
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.3.0/bugsink-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: "2"
     created: "2025-09-16T15:45:32.019542354Z"
     description: Unofficial Bugsink Helm Chart
     digest: f0e9e4d4388bda4055b6d712b62a76be12bb4d9a66cb18f9786c5c8098ac06f0
@@ -90,4 +134,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.1.0/bugsink-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-16T16:22:17.341204598Z"
+generated: "2025-09-16T16:30:37.603655867Z"
