@@ -14,6 +14,12 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      {{- if .Values.bugsink.pullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.bugsink.pullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}  
       containers:
         - name: bugsink
           image: "{{ .Values.bugsink.image.repository }}:{{ .Values.bugsink.image.tag }}"

@@ -1,8 +1,10 @@
 bugsink:
   image:
     repository: bugsink/bugsink
-    tag: latest
+    tag: 2
     pullPolicy: IfNotPresent
+    pullSecrets:
+
 
   replicas: 1
 

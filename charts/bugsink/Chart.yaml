@@ -2,8 +2,8 @@ apiVersion: v2
 name: bugsink
 description: Unofficial Bugsink Helm Chart
 type: application
-version: 0.1.0
-appVersion: "1.7.6"
+version: 0.2.0
+appVersion: "2"
 maintainers:
 - name: Victor Brinkhorst
   email: victor@bmlabs.eu
