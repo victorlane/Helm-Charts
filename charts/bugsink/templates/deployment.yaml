@@ -65,7 +65,10 @@ spec:
                   name: {{ .Values.bugsink.secrets.DATABASE_URL.secretName }}
                   key: {{ .Values.bugsink.secrets.DATABASE_URL.secretKey }}
               {{- else }}
-              value: {{ include "bugsink.databaseUrl" . | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-db" .Release.Name }}
+                  key: database-url
               {{- end }}
 
           livenessProbe:

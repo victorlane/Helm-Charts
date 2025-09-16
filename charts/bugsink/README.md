@@ -46,6 +46,43 @@ Key settings (see `values.yaml` for the full list):
 - `bugsink.secrets`: optionally source sensitive envs from existing Secrets
 - `bugsink.mariadb.*`: enable and configure bundled MariaDB
 
+### Database credentials and secret
+
+When you do not provide a `bugsink.secrets.DATABASE_URL`, this chart will:
+
+- Deploy a MariaDB instance (unless `bugsink.mariadb.enabled: false` and an external `DATABASE_URL` is provided)
+- Create a Secret named `<release-name>-db` containing:
+  - `db-username`: MariaDB username (from `bugsink.mariadb.username`)
+  - `db-password`: MariaDB password (random if `bugsink.mariadb.password` is empty)
+  - `db-name`: Database name (from `bugsink.mariadb.database`)
+  - `database-url`: Connection string for the app (`mysql://<user>:<pass>@<release-name>-mariadb:3306/<db>`)
+
+Both the MariaDB Deployment and the Bugsink Deployment read their credentials from this shared Secret to prevent mismatches.
+
+To set a deterministic password or username:
+
+```yaml
+bugsink:
+  mariadb:
+    username: bugsink
+    password: "my-strong-pass"
+    database: bugsink
+```
+
+To use an external database, supply `DATABASE_URL` via an existing Secret or a literal value and disable internal MariaDB:
+
+```yaml
+bugsink:
+  mariadb:
+    enabled: false
+  secrets:
+    DATABASE_URL:
+      secretName: my-db-secret
+      secretKey: DATABASE_URL
+      # or use a literal:
+      # value: mysql://user:pass@host:3306/dbname
+```
+
 ## Example usage
 
 To override values, use a custom `values.yaml` or `--set` flag:

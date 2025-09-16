@@ -40,11 +40,20 @@ spec:
             - name: MARIADB_ROOT_PASSWORD 
               value: rootpass
             - name: MARIADB_DATABASE
-              value: {{ .Values.bugsink.mariadb.database }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-db" .Release.Name }}
+                  key: db-name
             - name: MARIADB_USER
-              value: {{ .Values.bugsink.mariadb.username }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-db" .Release.Name }}
+                  key: db-username
             - name: MARIADB_PASSWORD
-              value: {{ default (randAlphaNum 16) .Values.bugsink.mariadb.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ printf "%s-db" .Release.Name }}
+                  key: db-password
           ports:
             - containerPort: 3306
           resources:

@@ -27,6 +27,6 @@ secretRef
 {{- else if .Values.bugsink.secrets.DATABASE_URL.value -}}
 {{ .Values.bugsink.secrets.DATABASE_URL.value }}
 {{- else -}}
-mysql://{{ .Values.bugsink.mariadb.username }}:{{ default (randAlphaNum 16) .Values.bugsink.mariadb.password }}@{{ .Release.Name }}-mariadb:3306/{{ .Values.bugsink.mariadb.database }}
+{{ printf "mysql://%s:%s@%s-mariadb:3306/%s" .Values.bugsink.mariadb.username (default (randAlphaNum 16) .Values.bugsink.mariadb.password) .Release.Name .Values.bugsink.mariadb.database }}
 {{- end -}}
 {{- end }}
