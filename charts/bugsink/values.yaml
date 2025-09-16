@@ -44,6 +44,7 @@ bugsink:
 
   mariadb:
     enabled: false # if no DATABASE_URL is set, mariadb gets deployed
+    pullSecrets: []
     username: bugsink
     password: "" # Random if empty
     database: bugsink

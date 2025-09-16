@@ -26,11 +26,17 @@ spec:
       labels:
         app: {{ .Chart.Name }}-mariadb
     spec:
+      {{- if .Values.bugsink.mariadb.pullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.bugsink.mariadb.pullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}  
       containers:
         - name: mariadb
           image: {{ .Values.bugsink.mariadb.image }}
           env:
-            - name: MARIADB_ROOT_PASSWORD
+            - name: MARIADB_ROOT_PASSWORD 
               value: rootpass
             - name: MARIADB_DATABASE
               value: {{ .Values.bugsink.mariadb.database }}
