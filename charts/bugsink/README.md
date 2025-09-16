@@ -78,7 +78,7 @@ bugsink:
 
 ## Persistence
 
-By default, Bugsink does not persist data. To enable persistence, configure the `persistence` section in `values.yaml`.
+By default, Bugsink does not persist data.
 
 ## Ingress
 

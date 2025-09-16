@@ -26,7 +26,7 @@ spec:
           image: "{{ .Values.bugsink.image.repository }}:{{ .Values.bugsink.image.tag }}"
           imagePullPolicy: {{ .Values.bugsink.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.bugsink.env.PORT | quote }}
+            - containerPort: {{ .Values.bugsink.env.PORT | int }}
           env:
             - name: PORT
               value: {{ .Values.bugsink.env.PORT | quote }}
@@ -71,13 +71,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: {{ .Values.bugsink.env.PORT | quote }}
+              port: {{ .Values.bugsink.env.PORT | int }}
             initialDelaySeconds: 10
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
-              port: {{ .Values.bugsink.env.PORT | quote }}
+              port: {{ .Values.bugsink.env.PORT | int }}
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
