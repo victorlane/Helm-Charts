@@ -1,0 +1,63 @@
+bugsink:
+  image:
+    repository: bugsink/bugsink
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  replicas: 1
+
+  ingress:
+    enabled: true
+    className: ""
+    annotations:
+    hosts:
+    - host: bugs.example.com
+      paths:
+      - path: /
+        pathType: Prefix
+    tls:
+    - secretName: tls-bugsink
+      hosts:
+      - bugs.example.com
+
+  env:
+    PORT: "8022"
+    BEHIND_HTTPS_PROXY: "false"
+    BASE_URL: "https://bugs.example.com" # Set this if BEHIND_HTTPS_PROXY
+
+  secrets:
+    # Delete the secrets block to autogenerate
+    SUPERUSER:
+      value: "" # literal "user:pass"
+      secretName: "" # reference an existing secret
+      secretKey: "" # key in that secret
+    SECRET_KEY:
+      value: ""
+      secretName: ""
+      secretKey: ""
+    DATABASE_URL:
+      value: ""
+      secretName: ""
+      secretKey: ""
+
+  mariadb:
+    enabled: false # if no DATABASE_URL is set, mariadb gets deployed
+    username: bugsink
+    password: "" # Random if empty
+    database: bugsink
+    image: mariadb:12.0-noble
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "300m"
+        memory: "256Mi"
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"

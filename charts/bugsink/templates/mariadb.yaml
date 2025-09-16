@@ -1,0 +1,45 @@
+{{- if or (and (not .Values.bugsink.secrets.DATABASE_URL.secretName) (not .Values.bugsink.secrets.DATABASE_URL.value)) .Values.bugsink.mariadb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-mariadb
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: {{ .Chart.Name }}-mariadb
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mariadb
+  labels:
+    app: {{ .Chart.Name }}-mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: {{ .Values.bugsink.mariadb.image }}
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              value: rootpass
+            - name: MARIADB_DATABASE
+              value: {{ .Values.bugsink.mariadb.database }}
+            - name: MARIADB_USER
+              value: {{ .Values.bugsink.mariadb.username }}
+            - name: MARIADB_PASSWORD
+              value: {{ default (randAlphaNum 16) .Values.bugsink.mariadb.password }}
+          ports:
+            - containerPort: 3306
+          resources:
+{{- toYaml .Values.bugsink.mariadb.resources | nindent 12 }}
+{{- end }}

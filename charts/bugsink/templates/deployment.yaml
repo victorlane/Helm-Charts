@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.bugsink.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: bugsink
+          image: "{{ .Values.bugsink.image.repository }}:{{ .Values.bugsink.image.tag }}"
+          imagePullPolicy: {{ .Values.bugsink.image.pullPolicy }}
+          ports:
+            - containerPort: 8022
+          env:
+            - name: PORT
+              value: {{ .Values.bugsink.env.PORT | quote }}
+            - name: BEHIND_HTTPS_PROXY
+              value: {{ .Values.bugsink.env.BEHIND_HTTPS_PROXY | quote }}
+            - name: BASE_URL
+              value: {{ .Values.bugsink.env.BASE_URL | quote }}
+
+            # SUPERUSER
+            - name: CREATE_SUPERUSER
+              {{- if and .Values.bugsink.secrets.SUPERUSER.secretName .Values.bugsink.secrets.SUPERUSER.secretKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bugsink.secrets.SUPERUSER.secretName }}
+                  key: {{ .Values.bugsink.secrets.SUPERUSER.secretKey }}
+              {{- else }}
+              value: {{ include "bugsink.superuser" . | quote }}
+              {{- end }}
+
+            # SECRET_KEY
+            - name: SECRET_KEY
+              {{- if and .Values.bugsink.secrets.SECRET_KEY.secretName .Values.bugsink.secrets.SECRET_KEY.secretKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bugsink.secrets.SECRET_KEY.secretName }}
+                  key: {{ .Values.bugsink.secrets.SECRET_KEY.secretKey }}
+              {{- else }}
+              value: {{ include "bugsink.secretKey" . | quote }}
+              {{- end }}
+
+            # DATABASE_URL
+            - name: DATABASE_URL
+              {{- if and .Values.bugsink.secrets.DATABASE_URL.secretName .Values.bugsink.secrets.DATABASE_URL.secretKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.bugsink.secrets.DATABASE_URL.secretName }}
+                  key: {{ .Values.bugsink.secrets.DATABASE_URL.secretKey }}
+              {{- else }}
+              value: {{ include "bugsink.databaseUrl" . | quote }}
+              {{- end }}
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8022
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8022
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+{{- toYaml .Values.bugsink.resources | nindent 12 }}

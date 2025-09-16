@@ -1,0 +1,42 @@
+{{- if .Values.bugsink.ingress.enabled }}
+{{- $root := . }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $root.Release.Name }}
+  labels:
+    app: {{ $root.Chart.Name }}
+  {{- with $root.Values.bugsink.ingress.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $root.Values.bugsink.ingress.className }}
+  ingressClassName: {{ $root.Values.bugsink.ingress.className }}
+  {{- end }}
+  rules:
+  {{- range $root.Values.bugsink.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ $root.Release.Name }}
+                port:
+                  number: 8022
+        {{- end }}
+  {{- end }}
+  {{- if $root.Values.bugsink.ingress.tls }}
+  tls:
+  {{- range $root.Values.bugsink.ingress.tls }}
+    - secretName: {{ .secretName }}
+      hosts:
+      {{- range .hosts }}
+        - {{ . }}
+      {{- end }}
+  {{- end }}
+  {{- end }}
+{{- end }}
