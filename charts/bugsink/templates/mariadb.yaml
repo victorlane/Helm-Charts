@@ -1,4 +1,5 @@
-{{- if or (and (not .Values.bugsink.secrets.DATABASE_URL.secretName) (not .Values.bugsink.secrets.DATABASE_URL.value)) .Values.bugsink.mariadb.enabled }}
+{{- $dbSec := default (dict "secretName" "" "value" "") .Values.bugsink.secrets.DATABASE_URL -}}
+{{- if or (and (not $dbSec.secretName) (not $dbSec.value)) .Values.bugsink.mariadb.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
