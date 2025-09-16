@@ -35,22 +35,16 @@ A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an 
 
 ## Configuration
 
-The following table lists the configurable parameters of the Bugsink chart and their default values. See `values.yaml` for the full list.
+Key settings (see `values.yaml` for the full list):
 
-| Parameter          | Description                          | Default           |
-| ------------------ | ------------------------------------ | ----------------- |
-| `replicaCount`     | Number of bugsink pods               | `1`               |
-| `image.repository` | Image repository                     | `bugsink/bugsink` |
-| `image.tag`        | Image tag                            | `latest`          |
-| `service.type`     | Kubernetes service type              | `ClusterIP`       |
-| `service.port`     | Service port                         | `8080`            |
-| `resources`        | CPU/Memory resource requests/limits  | `{}`              |
-| `nodeSelector`     | Node labels for pod assignment       | `{}`              |
-| `tolerations`      | Toleration labels for pod assignment | `[]`              |
-| `affinity`         | Affinity settings for pod assignment | `{}`              |
-| `mariadb.enabled`  | Enable MariaDB subchart              | `true`            |
-
-_See `values.yaml` for all available configuration options._
+- `bugsink.image.repository`: image repo (default `bugsink/bugsink`)
+- `bugsink.image.tag`: image tag (default `2`)
+- `bugsink.image.pullPolicy`: image pull policy
+- `bugsink.image.pullSecrets`: list of imagePullSecrets names to use
+- `bugsink.replicas`: number of replicas
+- `bugsink.env`: environment variables like `PORT`, `BASE_URL`
+- `bugsink.secrets`: optionally source sensitive envs from existing Secrets
+- `bugsink.mariadb.*`: enable and configure bundled MariaDB
 
 ## Example usage
 
@@ -58,7 +52,28 @@ To override values, use a custom `values.yaml` or `--set` flag:
 
 ```console
 helm install my-release victorlane/bugsink \
-  --set replicaCount=2,image.tag=1.0.0
+  --set bugsink.replicas=2,bugsink.image.tag=2
+```
+
+### Using private registries
+
+Create a Docker registry secret in your namespace:
+
+```console
+kubectl create secret docker-registry harbor-bmlabs \
+  --docker-server=harbor.bmlabs.eu \
+  --docker-username=<user> \
+  --docker-password='<pass>' \
+  --docker-email='<email>'
+```
+
+Reference it via values:
+
+```yaml
+bugsink:
+  image:
+    pullSecrets:
+      - harbor-bmlabs
 ```
 
 ## Persistence

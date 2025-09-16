@@ -14,9 +14,10 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
-      {{- if .Values.bugsink.pullSecrets }}
+      {{- $pullSecrets := coalesce .Values.bugsink.image.pullSecrets .Values.bugsink.pullSecrets }}
+      {{- if $pullSecrets }}
       imagePullSecrets:
-        {{- range .Values.bugsink.pullSecrets }}
+        {{- range $pullSecrets }}
         - name: {{ . }}
         {{- end }}
       {{- end }}  

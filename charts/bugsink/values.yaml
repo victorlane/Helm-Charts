@@ -3,8 +3,11 @@ bugsink:
     repository: bugsink/bugsink
     tag: 2
     pullPolicy: IfNotPresent
-    pullSecrets:
-
+    # List of image pull secrets to use for pulling the Bugsink image
+    # Example:
+    # pullSecrets:
+    #   - harbor-bmlabs
+    pullSecrets: []
 
   replicas: 1
 
