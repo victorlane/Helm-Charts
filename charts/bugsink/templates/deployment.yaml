@@ -96,17 +96,17 @@ spec:
                   key: database-url
               {{- end }}
 
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.bugsink.env.PORT | int }}
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.bugsink.env.PORT | int }}
-            initialDelaySeconds: 5
-            periodSeconds: 5
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.bugsink.env.PORT | int }}
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: {{ .Values.bugsink.env.PORT | int }}
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 5
           resources:
 {{- toYaml .Values.bugsink.resources | nindent 12 }}
