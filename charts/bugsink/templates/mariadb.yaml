@@ -1,5 +1,23 @@
 {{- $dbSec := default (dict "secretName" "" "value" "") .Values.bugsink.secrets.DATABASE_URL -}}
 {{- if or (and (not $dbSec.secretName) (not $dbSec.value)) .Values.bugsink.mariadb.enabled }}
+{{- if .Values.bugsink.mariadb.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-mariadb-pvc
+  labels:
+    app: {{ .Chart.Name }}-mariadb
+spec:
+  accessModes:
+    - {{ .Values.bugsink.mariadb.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.bugsink.mariadb.persistence.size }}
+  {{- if .Values.bugsink.mariadb.persistence.storageClass }}
+  storageClassName: {{ .Values.bugsink.mariadb.persistence.storageClass }}
+  {{- end }}
+---
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -56,6 +74,11 @@ spec:
                   key: db-password
           ports:
             - containerPort: 3306
+          {{- if .Values.bugsink.mariadb.persistence.enabled }}
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+          {{- end }}
           readinessProbe:
             tcpSocket:
               port: 3306
@@ -63,4 +86,10 @@ spec:
             periodSeconds: 2
           resources:
 {{- toYaml .Values.bugsink.mariadb.resources | nindent 12 }}
+      {{- if .Values.bugsink.mariadb.persistence.enabled }}
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-mariadb-pvc
+      {{- end }}
 {{- end }}

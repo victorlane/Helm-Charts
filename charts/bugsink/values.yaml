@@ -3,10 +3,6 @@ bugsink:
     repository: bugsink/bugsink
     tag: 2
     pullPolicy: IfNotPresent
-    # List of image pull secrets to use for pulling the Bugsink image
-    # Example:
-    # pullSecrets:
-    #   - harbor-bmlabs
     pullSecrets: []
 
   replicas: 1
@@ -52,6 +48,11 @@ bugsink:
     password: "" # Random if empty
     database: bugsink
     image: mariadb:12.0-noble
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: 8Gi
+      accessMode: ReadWriteOnce
     resources:
       requests:
         cpu: "100m"
