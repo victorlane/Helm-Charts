@@ -239,4 +239,37 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.1.0/bugsink-0.1.0.tgz
     version: 0.1.0
-generated: "2025-09-16T17:57:12.868583968Z"
+  n8n:
+  - apiVersion: v2
+    appVersion: 1.112.0
+    created: "2025-10-07T14:18:27.579859679Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 2.4.7
+    description: Helm Chart for deploying n8n on Kubernetes, based on 8gears n8n chart
+    digest: 3d4a6697ea1a9c473421d0b6e634f99163a9c91ea0133d9b87b47e0660b5b807
+    home: https://github.com/victorlane/Helm-Charts
+    icon: https://avatars1.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - Workflow Automation
+    - Workflow
+    - iPaaS
+    - integration-framework
+    - low-code-plattform
+    - low-code
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: n8n
+    sources:
+    - https://github.com/8gears/n8n-helm-chart
+    - https://github.com/n8n-io/n8n
+    - https://n8n.io/
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
+    version: 1.0.15
+generated: "2025-10-07T14:18:27.579892079Z"
