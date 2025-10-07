@@ -73,6 +73,27 @@ entries:
   bugsink:
   - apiVersion: v2
     appVersion: "2"
+    created: "2025-10-07T16:24:53.987246414Z"
+    description: Unofficial Bugsink Helm Chart
+    digest: a668095a3df9929bf64b5817a6c3a6325412e5c2898be39d955e625f07005ffa
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - bugsink
+    - sentry
+    - error tracking
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: bugsink
+    sources:
+    - https://github.com/bugsink/bugsink
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.3.6/bugsink-0.3.6.tgz
+    version: 0.3.6
+  - apiVersion: v2
+    appVersion: "2"
     created: "2025-09-16T17:57:12.868551427Z"
     description: Unofficial Bugsink Helm Chart
     digest: 8c3063b27a5eb652c143cb794fdd4c27dfab045a19d9d634670f7aadef2ff67b
@@ -242,6 +263,38 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: 1.112.0
+    created: "2025-10-07T16:24:54.177317748Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 2.4.7
+    description: Helm Chart for deploying n8n on Kubernetes, based on 8gears n8n chart
+    digest: e55f63775000bccd264831ddd070b3d972b1a573365de0977ca4019cdb64d5db
+    home: https://github.com/victorlane/Helm-Charts
+    icon: https://avatars1.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - Workflow Automation
+    - Workflow
+    - iPaaS
+    - integration-framework
+    - low-code-plattform
+    - low-code
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: n8n
+    sources:
+    - https://github.com/8gears/n8n-helm-chart
+    - https://github.com/n8n-io/n8n
+    - https://n8n.io/
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.16/n8n-1.0.16.tgz
+    version: 1.0.16
+  - apiVersion: v2
+    appVersion: 1.112.0
     created: "2025-10-07T14:18:27.579859679Z"
     dependencies:
     - condition: valkey.enabled
@@ -272,4 +325,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
     version: 1.0.15
-generated: "2025-10-07T14:18:27.579892079Z"
+generated: "2025-10-07T16:24:54.177343055Z"
