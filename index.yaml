@@ -73,6 +73,27 @@ entries:
   bugsink:
   - apiVersion: v2
     appVersion: "2"
+    created: "2025-10-07T18:29:24.221953373Z"
+    description: Unofficial Bugsink Helm Chart
+    digest: 22d2a77afae333e03ee4fbe1c656b68f6ecc48ecd1af164a6f035d4d1ab11c1c
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - bugsink
+    - sentry
+    - error tracking
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: bugsink
+    sources:
+    - https://github.com/bugsink/bugsink
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.3.7/bugsink-0.3.7.tgz
+    version: 0.3.7
+  - apiVersion: v2
+    appVersion: "2"
     created: "2025-10-07T16:24:53.987246414Z"
     description: Unofficial Bugsink Helm Chart
     digest: a668095a3df9929bf64b5817a6c3a6325412e5c2898be39d955e625f07005ffa
@@ -325,4 +346,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
     version: 1.0.15
-generated: "2025-10-07T16:24:54.177343055Z"
+generated: "2025-10-07T18:29:24.221996193Z"
