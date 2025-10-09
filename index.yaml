@@ -283,6 +283,38 @@ entries:
     version: 0.1.0
   n8n:
   - apiVersion: v2
+    appVersion: 1.115.1
+    created: "2025-10-09T18:27:19.435051464Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 2.4.7
+    description: Helm Chart for deploying n8n on Kubernetes, based on 8gears n8n chart
+    digest: efb9ea90e87958b3f6efe0e789806e586acdd8a4c0afee9c8cac09ce6e12386c
+    home: https://github.com/victorlane/Helm-Charts
+    icon: https://avatars1.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - Workflow Automation
+    - Workflow
+    - iPaaS
+    - integration-framework
+    - low-code-plattform
+    - low-code
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: n8n
+    sources:
+    - https://github.com/8gears/n8n-helm-chart
+    - https://github.com/n8n-io/n8n
+    - https://n8n.io/
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.17/n8n-1.0.17.tgz
+    version: 1.0.17
+  - apiVersion: v2
     appVersion: 1.112.0
     created: "2025-10-07T16:24:54.177317748Z"
     dependencies:
@@ -346,4 +378,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
     version: 1.0.15
-generated: "2025-10-07T18:29:24.221996193Z"
+generated: "2025-10-09T18:27:19.435104673Z"
