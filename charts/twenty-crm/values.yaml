@@ -1,0 +1,31 @@
+database:
+  # Deploy internal Spilo PostgreSQL instance
+  deploy:
+    enabled: true
+
+  # External database configuration
+  # Set external.enabled to true to use an external PostgreSQL database
+  external:
+    enabled: false
+    host: ""
+    port: 5432
+    database: "twenty"
+    username: "postgres"
+    password: ""
+    # Connection string (overrides individual settings if provided)
+    url: ""
+
+redis:
+  # Deploy internal Redis instance
+  deploy:
+    enabled: true
+
+  # External Redis configuration
+  # Set external.enabled to true to use an external Redis instance
+  external:
+    enabled: false
+    host: ""
+    port: 6379
+    password: ""
+    # Connection string (overrides individual settings if provided)
+    url: ""
