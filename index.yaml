@@ -284,6 +284,38 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: 1.115.1
+    created: "2025-11-28T16:56:28.397410383Z"
+    dependencies:
+    - condition: valkey.enabled
+      name: valkey
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 2.4.7
+    description: Helm Chart for deploying n8n on Kubernetes, based on 8gears n8n chart
+    digest: 12b625e0a1f3fbba609127f4f3a9cd4aec157cc0744f97f6615c3f18ad9b3c0c
+    home: https://github.com/victorlane/Helm-Charts
+    icon: https://avatars1.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - Workflow Automation
+    - Workflow
+    - iPaaS
+    - integration-framework
+    - low-code-plattform
+    - low-code
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: n8n
+    sources:
+    - https://github.com/8gears/n8n-helm-chart
+    - https://github.com/n8n-io/n8n
+    - https://n8n.io/
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.18/n8n-1.0.18.tgz
+    version: 1.0.18
+  - apiVersion: v2
+    appVersion: 1.115.1
     created: "2025-10-09T18:27:19.435051464Z"
     dependencies:
     - condition: valkey.enabled
@@ -378,4 +410,33 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
     version: 1.0.15
-generated: "2025-10-09T18:27:19.435104673Z"
+  operately:
+  - apiVersion: v2
+    appVersion: 1.1.0
+    created: "2025-11-28T16:56:28.52013081Z"
+    description: Helm chart for Operately
+    digest: 1696541ad832549ddea1e251bd6f2d530bff7383eb87ed49db277d178ee58897
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/open-chart/helm-charts
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/operately-0.0.10/operately-0.0.10.tgz
+    version: 0.0.10
+  twenty-crm:
+  - apiVersion: v2
+    created: "2025-11-28T16:56:28.653091595Z"
+    description: Deploy Twenty CRM to your Kubernetes cluster
+    digest: f098f77e08ba604e1eeabf02293221fce1262efaa1dc8390c0a40a6bbb5ab3aa
+    name: twenty-crm
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
+    version: 0.0.1
+generated: "2025-11-28T16:56:28.653145706Z"
