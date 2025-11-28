@@ -19,8 +19,8 @@ spec:
         fsGroup: {{ .Values.podSecurityContext.fsGroup }}
         fsGroupChangePolicy: {{ .Values.podSecurityContext.fsGroupChangePolicy | quote }}
       {{- end }}
-      {{- if .Values.mediaVolume.fixPermissions }}
       initContainers:
+        {{- if .Values.mediaVolume.fixPermissions }}
         - name: fix-media-permissions
           image: busybox:1.36
           command: ["sh","-c","mkdir -p {{ .Values.persistence.mountPath }} {{ .Values.persistence.mountPath }}/certs && chown -R 65534:65534 {{ .Values.persistence.mountPath }} && chmod -R 0775 {{ .Values.persistence.mountPath }}"]
@@ -29,7 +29,55 @@ spec:
           volumeMounts:
             - name: media
               mountPath: {{ .Values.persistence.mountPath }}
-      {{- end }}
+        {{- end }}
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/opt/operately/bin/migrate"]
+          {{- if .Values.securityContext.enabled }}
+          securityContext:
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "operately.fullname" . }}
+          env:
+            - name: SECRET_KEY_BASE
+              value: {{ include "operately.secretKeyBase" . | quote }}
+            - name: OPERATELY_BLOB_TOKEN_SECRET_KEY
+              value: {{ include "operately.blobTokenSecretKey" . | quote }}
+            {{- if and .Values.externalPostgresql.enabled .Values.externalPostgresql.existingSecret }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalPostgresql.existingSecret }}
+                  key: {{ .Values.externalPostgresql.existingSecretKey | default "password" }}
+            - name: DATABASE_URL
+              value: {{ printf "ecto://%s:$(DATABASE_PASSWORD)@%s:%v/%s" .Values.externalPostgresql.username .Values.externalPostgresql.host .Values.externalPostgresql.port .Values.externalPostgresql.database | quote }}
+            {{- else }}
+            - name: DATABASE_URL
+              value: {{ required "Database must be configured via externalPostgresql or postgresql.enabled" (include "operately.database.url" .) | quote }}
+            {{- end }}
+            {{- range .Values.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+            {{- range .Values.extraSecretEnv }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "operately.fullname" $) $.Values.secrets.name }}
+                  key: {{ .key }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: media
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- else }}
+            - name: media
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- end }}
       {{- if .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.image.imagePullSecrets | nindent 8 }}
