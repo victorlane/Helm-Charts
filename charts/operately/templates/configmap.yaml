@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "operately.fullname" . }}
+  labels:
+    {{- include "operately.labels" . | nindent 4 }}
+data:
+  PHX_SERVER: "true"
+  OPERATELY_HOST: {{ quote (default (printf "%s.%s.svc.cluster.local" (include "operately.fullname" .) .Release.Namespace) .Values.env.operatelyHost) }}
+  OPERATELY_URL_SCHEME: {{ quote (.Values.env.urlScheme | default "http") }}
+  PORT: {{ quote (toString .Values.service.port) }}
+  ALLOW_LOGIN_WITH_EMAIL: {{ quote .Values.env.allowLoginWithEmail }}
+  ALLOW_SIGNUP_WITH_EMAIL: {{ quote .Values.env.allowSignupWithEmail }}
+  REQUIRE_EMAIL_VERIFICATION: {{ quote .Values.env.requireEmailVerification }}
+  ALLOW_LOGIN_WITH_GOOGLE: {{ quote .Values.env.allowLoginWithGoogle }}
+  ALLOW_SIGNUP_WITH_GOOGLE: {{ quote .Values.env.allowSignupWithGoogle }}
+  SEND_ONBOARDING_EMAILS: {{ quote .Values.env.sendOnboardingEmails }}
+  OPERATELY_DEMO_BUILDER_ALLOWED: {{ quote .Values.env.demoBuilderAllowed }}
+  OPERATELY_STORAGE_TYPE: {{ quote .Values.env.storageType }}
+  OPERATELY_JS_SENTRY_ENABLED: {{ quote .Values.env.jsSentryEnabled }}
+  OPERATELY_BEACON_ENABLED: {{ quote .Values.env.beaconEnabled }}
+  OPERATELY_BEACON_COLLECTOR_ENABLED: {{ quote .Values.env.beaconCollectorEnabled }}

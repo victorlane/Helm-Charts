@@ -1,0 +1,130 @@
+image:
+  repository: operately/operately
+  tag: "v1.1.0"
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 4000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+  - host: example.operately.local
+    paths:
+    - path: /
+      pathType: Prefix
+  tls: []
+
+persistence:
+  enabled: true
+  mountPath: /media
+  size: 1Gi
+  storageClassName: longhorn
+
+resources: {}
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
+# Security contexts for the app pod/container
+podSecurityContext:
+  enabled: true
+  fsGroup: 65534
+  fsGroupChangePolicy: OnRootMismatch
+
+securityContext:
+  enabled: true
+  runAsUser: 65534
+  runAsNonRoot: true
+
+# Ensure /media is writable when using emptyDir by fixing permissions
+mediaVolume:
+  fixPermissions: true
+
+# Application env (non-secret)
+env:
+  # Optional: host your users will access (omit for in-cluster only)
+  operatelyHost: ""
+  # Optional: http or https (default http when omitted)
+  urlScheme: ""
+  # Optional feature/config flags
+  allowLoginWithEmail: "yes"
+  allowSignupWithEmail: "no"
+  requireEmailVerification: "no"
+  allowLoginWithGoogle: "no"
+  allowSignupWithGoogle: "no"
+  sendOnboardingEmails: "no"
+  demoBuilderAllowed: "false"
+  storageType: "local" # local | s3, etc. When local, /media is used
+  jsSentryEnabled: "false"
+  beaconEnabled: "false"
+  beaconCollectorEnabled: "false"
+
+# Secrets
+secrets:
+  create: false
+  name: ""
+  # Auto-generated if not provided. For production, set explicit values.
+  secretKeyBase: ""
+  # Used for encrypting local storage blob tokens. Generate with:
+  #   openssl rand -base64 32
+  # Auto-generated if not provided. For production, set explicit values.
+  blobTokenSecretKey: ""
+  # If using a pre-existing secret, set create=false and name to that secret.
+  # Expected keys: DATABASE_URL, SECRET_KEY_BASE (plus any extras you add)
+
+  # Database configuration
+  # Option A: external PostgreSQL
+externalPostgresql:
+  enabled: false
+  # Provide a ready DATABASE_URL or individual components below
+  databaseUrl: ""
+  host: "postgres.example"
+  port: 5432
+  database: "operately"
+  username: "operately"
+  password: "change-me"
+  # If password is in an existing secret:
+  # existingSecret: name-of-secret
+  # existingSecretKey: POSTGRES_PASSWORD
+
+  # Option B: in-cluster Postgres via Bitnami chart (mutually exclusive with externalPostgresql)
+postgresql:
+  enabled: false
+  auth:
+    username: operately
+    password: change-me
+    database: operately
+  primary:
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 1Gi
+
+# Extra environment variables you want to inject (non-secret)
+extraEnv:
+# Keep ACME disabled; HTTP only defaults
+- name: CERT_AUTO_RENEW
+  value: "no"
+- name: CERT_DOMAIN
+  value: "localhost"
+- name: CERT_EMAILS
+  value: "admin@localhost"
+- name: CERT_DB_DIR
+  value: "/media/certs"
+# Examples for other knobs:
+# - name: OPERATELY_AI_PROVIDER
+#   value: openai
+# - name: OPERATELY_AI_OPENAI_MODEL
+#   value: gpt-5
+
+# Extra secret env (will be keys looked up from the chosen secret)
+extraSecretEnv: []
+
+# - name: SENTRY_DSN
+#   key: SENTRY_DSN

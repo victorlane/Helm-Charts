@@ -1,0 +1,16 @@
+apiVersion: v2
+name: operately
+description: Helm chart for Operately
+type: application
+version: 0.0.10
+appVersion: "1.1.0"
+
+keywords:
+- productivity
+- task-management
+- operately
+
+home: https://github.com/victorlane/Helm-Charts
+sources:
+- https://github.com/open-chart/helm-charts
+- https://github.com/operately/operately
