@@ -413,6 +413,24 @@ entries:
   operately:
   - apiVersion: v2
     appVersion: 1.1.0
+    created: "2025-11-28T17:10:15.704149179Z"
+    description: Helm chart for Operately
+    digest: e489064fec29faf08b07b7928b2de881493873a615e74255a1ce7c184a3b26ba
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/open-chart/helm-charts
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/operately-0.0.11/operately-0.0.11.tgz
+    version: 0.0.11
+  - apiVersion: v2
+    appVersion: 1.1.0
     created: "2025-11-28T16:56:28.52013081Z"
     description: Helm chart for Operately
     digest: 1696541ad832549ddea1e251bd6f2d530bff7383eb87ed49db277d178ee58897
@@ -439,4 +457,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-28T16:56:28.653145706Z"
+generated: "2025-11-28T17:10:15.704188813Z"
