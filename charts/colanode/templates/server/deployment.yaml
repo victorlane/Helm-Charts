@@ -43,14 +43,14 @@ spec:
                 sleep 2
               done
               echo "Valkey is ready!"
-          {{- if .Values.valkey.auth.enabled }}
+{{- if .Values.valkey.auth.enabled }}
           env:
             - name: VALKEY_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.valkey.auth.existingSecret }}{{ .Values.valkey.auth.existingSecret }}{{ else }}{{ include "colanode.fullname" . }}-valkey{{ end }}
                   key: {{ .Values.valkey.auth.passwordKey }}
-          {{- end }}
+{{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
