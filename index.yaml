@@ -281,6 +281,38 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/bugsink-0.1.0/bugsink-0.1.0.tgz
     version: 0.1.0
+  colanode:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-01T12:13:52.307752241Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.7.4
+    - alias: redis
+      condition: redis.enabled
+      name: valkey
+      repository: https://charts.bitnami.com/bitnami
+      version: 3.0.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.0.10
+    description: A Helm chart for Colanode - open-source & local-first collaboration
+      workspace
+    digest: 5af0f00acf358f5cfd4bfa5a1d3f9edf8e533d63755a0d21851a8bd62baef8a3
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - collaboration
+    name: colanode
+    sources:
+    - https://github.com/colanode/colanode/tree/main/hosting/kubernetes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/colanode-0.2.0/colanode-0.2.0.tgz
+    version: 0.2.0
   n8n:
   - apiVersion: v2
     appVersion: 1.115.1
@@ -457,4 +489,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2025-11-28T17:10:15.704188813Z"
+generated: "2025-12-01T12:13:52.307785583Z"
