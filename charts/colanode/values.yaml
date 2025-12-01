@@ -99,7 +99,7 @@ colanode:
     USER_MAX_FILE_SIZE: '104857600' # 100 MB
 
     # Database connection (PostgreSQL)
-    POSTGRES_URL: 'postgres://colanode_user:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/colanode_db'
+    # Note: POSTGRES_URL is constructed automatically from postgresql.* settings
     # Optional SSL settings for PostgreSQL
     # POSTGRES_SSL_REJECT_UNAUTHORIZED: "false"
     # POSTGRES_SSL_CA: ""
@@ -223,8 +223,27 @@ global:
 
 # PostgreSQL with pgvector extension
 postgresql:
-  # -- Enable PostgreSQL deployment
+  # -- Enable PostgreSQL deployment (set to false to use external database)
   enabled: true
+
+  # -- External PostgreSQL configuration (used when enabled: false)
+  external:
+    # -- External PostgreSQL host
+    host: ''
+    # -- External PostgreSQL port
+    port: 5432
+    # -- Database name
+    database: 'colanode_db'
+    # -- PostgreSQL username
+    username: 'postgres'
+    # -- PostgreSQL password (plain text - prefer using existingSecret)
+    password: ''
+    # -- Name of existing secret containing PostgreSQL password
+    existingSecret: ''
+    # -- Key within the existing secret that contains the password
+    existingSecretKey: 'postgres-password'
+
+  # Internal PostgreSQL deployment settings (used when enabled: true)
   image:
     registry: ghcr.io
     repository: colanode/postgresql

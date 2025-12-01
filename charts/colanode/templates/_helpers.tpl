@@ -65,7 +65,44 @@ Create the name of the service account to use
 Return the PostgreSQL hostname
 */}}
 {{- define "colanode.postgresql.hostname" -}}
+{{- if .Values.postgresql.enabled -}}
 {{- printf "%s-postgresql" .Release.Name -}}
+{{- else -}}
+{{- required "postgresql.external.host is required when postgresql.enabled is false" .Values.postgresql.external.host -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return the PostgreSQL port
+*/}}
+{{- define "colanode.postgresql.port" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- print "5432" -}}
+{{- else -}}
+{{- .Values.postgresql.external.port -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return the PostgreSQL database name
+*/}}
+{{- define "colanode.postgresql.database" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- .Values.postgresql.auth.database -}}
+{{- else -}}
+{{- .Values.postgresql.external.database -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Return the PostgreSQL username
+*/}}
+{{- define "colanode.postgresql.username" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- .Values.postgresql.auth.username -}}
+{{- else -}}
+{{- .Values.postgresql.external.username -}}
+{{- end -}}
 {{- end }}
 
 {{/*
@@ -177,12 +214,25 @@ Colanode Server Environment Variables
 # PostgreSQL Configuration
 # ───────────────────────────────────────────────────────────────
 - name: POSTGRES_PASSWORD
+{{- if .Values.postgresql.enabled }}
   valueFrom:
     secretKeyRef:
       name: {{ .Release.Name }}-postgresql
       key: postgres-password
+{{- else }}
+  {{- if .Values.postgresql.external.existingSecret }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.postgresql.external.existingSecret }}
+      key: {{ .Values.postgresql.external.existingSecretKey }}
+  {{- else if .Values.postgresql.external.password }}
+  value: {{ .Values.postgresql.external.password | quote }}
+  {{- else }}
+  {{- fail "postgresql.external.password or postgresql.external.existingSecret is required when postgresql.enabled is false" }}
+  {{- end }}
+{{- end }}
 - name: POSTGRES_URL
-  value: "postgres://{{ .Values.postgresql.auth.username }}:$(POSTGRES_PASSWORD)@{{ include "colanode.postgresql.hostname" . }}:5432/{{ .Values.postgresql.auth.database }}"
+  value: "postgres://{{ include "colanode.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "colanode.postgresql.hostname" . }}:{{ include "colanode.postgresql.port" . }}/{{ include "colanode.postgresql.database" . }}"
 
 # ───────────────────────────────────────────────────────────────
 # Redis/Valkey Configuration
