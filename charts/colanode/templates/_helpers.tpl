@@ -297,12 +297,12 @@ Colanode Server Environment Variables
 # SMTP configuration
 # ───────────────────────────────────────────────────────────────
 - name: SMTP_ENABLED
-  value: {{ .Values.colanode.config.SMTP_ENABLED | quote }}
-{{- if eq .Values.colanode.config.SMTP_ENABLED "true" }}
+  value: {{ ternary "true" "false" .Values.colanode.smtp.enabled | quote }}
+{{- if .Values.colanode.smtp.enabled }}
 - name: SMTP_HOST
-  value: {{ required "colanode.config.SMTP_HOST must be set when SMTP_ENABLED is true" .Values.colanode.config.SMTP_HOST | quote }}
+  value: {{ required "colanode.smtp.host must be set when smtp.enabled is true" .Values.colanode.smtp.host | quote }}
 - name: SMTP_PORT
-  value: {{ required "colanode.config.SMTP_PORT must be set when SMTP_ENABLED is true" .Values.colanode.config.SMTP_PORT | quote }}
+  value: {{ required "colanode.smtp.port must be set when smtp.enabled is true" .Values.colanode.smtp.port | quote }}
 - name: SMTP_USER
 {{- if or .Values.colanode.smtp.user.value .Values.colanode.smtp.user.existingSecret }}
   {{- include "colanode.getValueOrSecret" (dict "key" "colanode.smtp.user" "value" .Values.colanode.smtp.user) | nindent 2 }}
@@ -316,8 +316,8 @@ Colanode Server Environment Variables
   value: ""
 {{- end }}
 - name: SMTP_EMAIL_FROM
-  value: {{ required "colanode.config.SMTP_EMAIL_FROM must be set when SMTP_ENABLED is true" .Values.colanode.config.SMTP_EMAIL_FROM | quote }}
+  value: {{ required "colanode.smtp.emailFrom must be set when smtp.enabled is true" .Values.colanode.smtp.emailFrom | quote }}
 - name: SMTP_EMAIL_FROM_NAME
-  value: {{ .Values.colanode.config.SMTP_EMAIL_FROM_NAME | quote }}
+  value: {{ .Values.colanode.smtp.emailFromName | quote }}
 {{- end }}
 {{- end }}

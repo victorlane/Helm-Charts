@@ -114,15 +114,18 @@ colanode:
     REDIS_TUS_KV_PREFIX: 'colanode:tus:kv'
     REDIS_EVENTS_CHANNEL: 'events'
 
-    # Email configuration
-    SMTP_ENABLED: 'false'
-    # SMTP_HOST: ""
-    # SMTP_PORT: "587"
-    # SMTP_EMAIL_FROM: ""
-    # SMTP_EMAIL_FROM_NAME: "Colanode"
-
-    # SMTP credentials (can use plain values or reference existing secrets)
+  # Email configuration
   smtp:
+    # -- Enable SMTP email sending
+    enabled: false
+    # -- SMTP server host
+    host: ''
+    # -- SMTP server port
+    port: '587'
+    # -- Email address to send from
+    emailFrom: ''
+    # -- Name to display in the from field
+    emailFromName: 'Colanode'
     user:
       # -- Optional plain-text SMTP user (prefer using secrets in production)
       value: ''
