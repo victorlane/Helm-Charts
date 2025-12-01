@@ -44,7 +44,7 @@ server:
     # -- Kubernetes service type
     type: ClusterIP
     # -- Kubernetes service port
-    port: 3000
+    port: 80
 
   ingress:
     # -- Enable ingress controller resource for server
