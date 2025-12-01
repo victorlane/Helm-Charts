@@ -66,14 +66,12 @@ spec:
           timeoutSeconds: 3
           successThreshold: 1
           failureThreshold: 3
-        {{- if .Values.valkey.persistence.enabled }}
         volumeMounts:
         - name: data
           mountPath: /data
         {{- if .Values.valkey.auth.enabled }}
         - name: config
           mountPath: /etc/valkey
-        {{- end }}
         {{- end }}
         resources:
           {{- toYaml .Values.valkey.resources | nindent 10 }}

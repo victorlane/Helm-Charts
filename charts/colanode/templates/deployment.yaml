@@ -28,6 +28,28 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "colanode.serviceAccountName" . }}
+      {{- if .Values.valkey.enabled }}
+      initContainers:
+        - name: wait-for-valkey
+          image: valkey/valkey:9-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until valkey-cli -h {{ include "colanode.redis.hostname" . }} -p 6379 {{- if .Values.valkey.auth.enabled }} -a "$VALKEY_PASSWORD"{{- end }} ping | grep -q PONG; do
+                echo "Waiting for Valkey to be ready..."
+                sleep 2
+              done
+              echo "Valkey is ready!"
+          {{- if .Values.valkey.auth.enabled }}
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.valkey.auth.existingSecret }}{{ .Values.valkey.auth.existingSecret }}{{ else }}{{ include "colanode.fullname" . }}-valkey{{ end }}
+                  key: {{ .Values.valkey.auth.passwordKey }}
+          {{- end }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.colanode.image.repository }}:{{ .Values.colanode.image.tag | default .Chart.AppVersion }}"
