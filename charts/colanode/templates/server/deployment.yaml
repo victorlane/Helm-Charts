@@ -1,29 +1,31 @@
+{{- if .Values.server.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "colanode.fullname" . }}
+  name: {{ include "colanode.fullname" . }}-server
   labels:
     {{- include "colanode.labels" . | nindent 4 }}
+    app.kubernetes.io/component: server
 spec:
-  {{- if not .Values.colanode.autoscaling.enabled }}
-  replicas: {{ .Values.colanode.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.server.replicaCount }}
   selector:
     matchLabels:
       {{- include "colanode.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: server
   template:
     metadata:
-      {{- with .Values.colanode.podAnnotations }}
+      {{- with .Values.server.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "colanode.selectorLabels" . | nindent 8 }}
-        {{- with .Values.colanode.podLabels }}
+        app.kubernetes.io/component: server
+        {{- with .Values.server.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.colanode.imagePullSecrets }}
+      {{- with .Values.server.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -52,23 +54,23 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.colanode.image.repository }}:{{ .Values.colanode.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.colanode.image.pullPolicy }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.colanode.service.port }}
+              containerPort: {{ .Values.server.service.port }}
               protocol: TCP
           env:
             {{- include "colanode.serverEnvVars" . | nindent 12 }}
-{{- $storageType := default "file" .Values.colanode.storage.type }}
+{{- $storageType := default "file" .Values.server.storage.type }}
 {{- $mountFileStorage := eq $storageType "file" }}
-{{- $gcsSecret := .Values.colanode.storage.gcs.credentialsSecret }}
+{{- $gcsSecret := .Values.server.storage.gcs.credentialsSecret }}
 {{- $mountGcsCredentials := and (eq $storageType "gcs") $gcsSecret.name }}
 {{- if or $mountFileStorage $mountGcsCredentials }}
           volumeMounts:
 {{- if $mountFileStorage }}
             - name: storage-data
-              mountPath: {{ required "colanode.storage.file.directory must be set when STORAGE_TYPE is file" .Values.colanode.storage.file.directory }}
+              mountPath: {{ required "colanode.storage.file.directory must be set when STORAGE_TYPE is file" .Values.server.storage.file.directory }}
 {{- end }}
 {{- if $mountGcsCredentials }}
             - name: gcs-credentials
@@ -77,12 +79,12 @@ spec:
 {{- end }}
 {{- end }}
           resources:
-            {{- toYaml .Values.colanode.resources | nindent 12 }}
+            {{- toYaml .Values.server.resources | nindent 12 }}
 {{- if or $mountFileStorage $mountGcsCredentials }}
       volumes:
 {{- if $mountFileStorage }}
         - name: storage-data
-{{- $persistence := .Values.colanode.storage.file.persistence }}
+{{- $persistence := .Values.server.storage.file.persistence }}
 {{- if $persistence.enabled }}
 {{- if $persistence.existingClaim }}
           persistentVolumeClaim:
@@ -102,5 +104,6 @@ spec:
             items:
               - key: {{ required "colanode.storage.gcs.credentialsSecret.key must be set when providing a secret" $gcsSecret.key }}
                 path: {{ required "colanode.storage.gcs.credentialsSecret.fileName must be set when providing a secret" $gcsSecret.fileName }}
+{{- end }}
 {{- end }}
 {{- end }}

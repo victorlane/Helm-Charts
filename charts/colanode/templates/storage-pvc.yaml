@@ -1,5 +1,5 @@
-{{- $storageType := default "file" .Values.colanode.storage.type -}}
-{{- $persistence := .Values.colanode.storage.file.persistence -}}
+{{- $storageType := default "file" .Values.server.storage.type -}}
+{{- $persistence := .Values.server.storage.file.persistence -}}
 {{- if and (eq $storageType "file") $persistence.enabled (not $persistence.existingClaim) -}}
 apiVersion: v1
 kind: PersistentVolumeClaim

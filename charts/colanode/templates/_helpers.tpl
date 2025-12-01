@@ -54,10 +54,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Create the name of the service account to use
 */}}
 {{- define "colanode.serviceAccountName" -}}
-{{- if .Values.colanode.serviceAccount.create }}
-{{- default (include "colanode.fullname" .) .Values.colanode.serviceAccount.name }}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "colanode.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.colanode.serviceAccount.name }}
+{{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
@@ -112,12 +112,7 @@ Return the Redis hostname
 {{- printf "%s-valkey" (include "colanode.fullname" .) -}}
 {{- end }}
 
-{{/*
-Return the MinIO hostname
-*/}}
-{{- define "colanode.minio.hostname" -}}
-{{- printf "%s-minio" .Release.Name -}}
-{{- end }}
+
 
 {{/*
 Return the default PVC name used for file storage
@@ -168,47 +163,47 @@ Colanode Server Environment Variables
 # General Node/Server Config
 # ───────────────────────────────────────────────────────────────
 - name: NODE_ENV
-  value: {{ .Values.colanode.config.NODE_ENV | quote }}
+  value: {{ .Values.server.config.NODE_ENV | quote }}
 - name: PORT
-  value: {{ .Values.colanode.service.port | quote }}
+  value: {{ .Values.server.service.port | quote }}
 - name: SERVER_NAME
-  value: {{ .Values.colanode.config.SERVER_NAME | quote }}
+  value: {{ .Values.server.config.SERVER_NAME | quote }}
 - name: SERVER_AVATAR
-  value: {{ .Values.colanode.config.SERVER_AVATAR | quote }}
+  value: {{ .Values.server.config.SERVER_AVATAR | quote }}
 - name: SERVER_MODE
-  value: {{ .Values.colanode.config.SERVER_MODE | quote }}
+  value: {{ .Values.server.config.SERVER_MODE | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # Logging Configuration
 # ───────────────────────────────────────────────────────────────
 - name: LOGGING_LEVEL
-  value: {{ .Values.colanode.config.LOGGING_LEVEL | quote }}
+  value: {{ .Values.server.config.LOGGING_LEVEL | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # Account Configuration
 # ───────────────────────────────────────────────────────────────
 - name: ACCOUNT_VERIFICATION_TYPE
-  value: {{ .Values.colanode.config.ACCOUNT_VERIFICATION_TYPE | quote }}
+  value: {{ .Values.server.config.ACCOUNT_VERIFICATION_TYPE | quote }}
 - name: ACCOUNT_OTP_TIMEOUT
-  value: {{ .Values.colanode.config.ACCOUNT_OTP_TIMEOUT | quote }}
+  value: {{ .Values.server.config.ACCOUNT_OTP_TIMEOUT | quote }}
 - name: ACCOUNT_ALLOW_GOOGLE_LOGIN
-  value: {{ .Values.colanode.config.ACCOUNT_ALLOW_GOOGLE_LOGIN | quote }}
+  value: {{ .Values.server.config.ACCOUNT_ALLOW_GOOGLE_LOGIN | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # Workspace Configuration
 # ───────────────────────────────────────────────────────────────
 - name: WORKSPACE_STORAGE_LIMIT
-  value: {{ .Values.colanode.config.WORKSPACE_STORAGE_LIMIT | quote }}
+  value: {{ .Values.server.config.WORKSPACE_STORAGE_LIMIT | quote }}
 - name: WORKSPACE_MAX_FILE_SIZE
-  value: {{ .Values.colanode.config.WORKSPACE_MAX_FILE_SIZE | quote }}
+  value: {{ .Values.server.config.WORKSPACE_MAX_FILE_SIZE | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # User Configuration
 # ───────────────────────────────────────────────────────────────
 - name: USER_STORAGE_LIMIT
-  value: {{ .Values.colanode.config.USER_STORAGE_LIMIT | quote }}
+  value: {{ .Values.server.config.USER_STORAGE_LIMIT | quote }}
 - name: USER_MAX_FILE_SIZE
-  value: {{ .Values.colanode.config.USER_MAX_FILE_SIZE | quote }}
+  value: {{ .Values.server.config.USER_MAX_FILE_SIZE | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # PostgreSQL Configuration
@@ -262,38 +257,38 @@ Colanode Server Environment Variables
       key: {{ .Values.valkey.auth.passwordKey }}
   {{- end }}
 - name: REDIS_URL
-  value: "redis://:$(REDIS_PASSWORD)@{{ include "colanode.redis.hostname" . }}:6379/{{ .Values.colanode.config.REDIS_DB }}"
+  value: "redis://:$(REDIS_PASSWORD)@{{ include "colanode.redis.hostname" . }}:6379/{{ .Values.server.config.REDIS_DB }}"
 - name: REDIS_DB
-  value: {{ .Values.colanode.config.REDIS_DB | quote }}
+  value: {{ .Values.server.config.REDIS_DB | quote }}
 - name: REDIS_JOBS_QUEUE_NAME
-  value: {{ .Values.colanode.config.REDIS_JOBS_QUEUE_NAME | quote }}
+  value: {{ .Values.server.config.REDIS_JOBS_QUEUE_NAME | quote }}
 - name: REDIS_JOBS_QUEUE_PREFIX
-  value: {{ .Values.colanode.config.REDIS_JOBS_QUEUE_PREFIX | quote }}
+  value: {{ .Values.server.config.REDIS_JOBS_QUEUE_PREFIX | quote }}
 - name: REDIS_TUS_LOCK_PREFIX
-  value: {{ .Values.colanode.config.REDIS_TUS_LOCK_PREFIX | quote }}
+  value: {{ .Values.server.config.REDIS_TUS_LOCK_PREFIX | quote }}
 - name: REDIS_TUS_KV_PREFIX
-  value: {{ .Values.colanode.config.REDIS_TUS_KV_PREFIX | quote }}
+  value: {{ .Values.server.config.REDIS_TUS_KV_PREFIX | quote }}
 - name: REDIS_EVENTS_CHANNEL
-  value: {{ .Values.colanode.config.REDIS_EVENTS_CHANNEL | quote }}
+  value: {{ .Values.server.config.REDIS_EVENTS_CHANNEL | quote }}
 
 # ───────────────────────────────────────────────────────────────
 # Storage Configuration
 # ───────────────────────────────────────────────────────────────
 - name: STORAGE_TYPE
-  value: {{ default "file" .Values.colanode.storage.type | quote }}
-{{- $storageType := default "file" .Values.colanode.storage.type }}
+  value: {{ default "file" .Values.server.storage.type | quote }}
+{{- $storageType := default "file" .Values.server.storage.type }}
 {{- if eq $storageType "file" }}
 - name: STORAGE_FILE_DIRECTORY
-  value: {{ required "colanode.storage.file.directory must be set when STORAGE_TYPE is file" .Values.colanode.storage.file.directory | quote }}
+  value: {{ required "colanode.storage.file.directory must be set when STORAGE_TYPE is file" .Values.server.storage.file.directory | quote }}
 {{- end }}
 {{- if eq $storageType "s3" }}
-{{- $s3 := .Values.colanode.storage.s3 }}
+{{- $s3 := .Values.server.storage.s3 }}
 {{- $endpoint := $s3.endpoint }}
-{{- if and (not $endpoint) (not .Values.minio.enabled) }}
-{{- fail "colanode.storage.s3.endpoint must be provided when MinIO is disabled" }}
+{{- if not $endpoint }}
+{{- fail "colanode.storage.s3.endpoint must be provided when STORAGE_TYPE is s3" }}
 {{- end }}
 - name: STORAGE_S3_ENDPOINT
-  value: {{ if $endpoint }}{{ $endpoint | quote }}{{ else }}{{ printf "http://%s:9000" (include "colanode.minio.hostname" .) | quote }}{{ end }}
+  value: {{ $endpoint | quote }}
 - name: STORAGE_S3_BUCKET
   value: {{ required "colanode.storage.s3.bucket must be set when STORAGE_TYPE is s3" $s3.bucket | quote }}
 - name: STORAGE_S3_REGION
@@ -303,28 +298,18 @@ Colanode Server Environment Variables
 - name: STORAGE_S3_ACCESS_KEY
 {{- if or $s3.accessKey.value $s3.accessKey.existingSecret }}
   {{- include "colanode.getRequiredValueOrSecret" (dict "key" "colanode.storage.s3.accessKey" "value" $s3.accessKey) | nindent 2 }}
-{{- else if .Values.minio.enabled }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ if .Values.minio.auth.existingSecret }}{{ .Values.minio.auth.existingSecret }}{{ else }}{{ printf "%s-minio" .Release.Name }}{{ end }}
-      key: {{ .Values.minio.auth.rootUserKey }}
 {{- else }}
-  {{- fail "An S3 access key must be provided via colanode.storage.s3.accessKey when STORAGE_TYPE is s3 and MinIO is disabled" }}
+  {{- fail "An S3 access key must be provided via colanode.storage.s3.accessKey when STORAGE_TYPE is s3" }}
 {{- end }}
 - name: STORAGE_S3_SECRET_KEY
 {{- if or $s3.secretKey.value $s3.secretKey.existingSecret }}
   {{- include "colanode.getRequiredValueOrSecret" (dict "key" "colanode.storage.s3.secretKey" "value" $s3.secretKey) | nindent 2 }}
-{{- else if .Values.minio.enabled }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ if .Values.minio.auth.existingSecret }}{{ .Values.minio.auth.existingSecret }}{{ else }}{{ printf "%s-minio" .Release.Name }}{{ end }}
-      key: {{ .Values.minio.auth.rootPasswordKey }}
 {{- else }}
-  {{- fail "An S3 secret key must be provided via colanode.storage.s3.secretKey when STORAGE_TYPE is s3 and MinIO is disabled" }}
+  {{- fail "An S3 secret key must be provided via colanode.storage.s3.secretKey when STORAGE_TYPE is s3" }}
 {{- end }}
 {{- end }}
 {{- if eq $storageType "gcs" }}
-{{- $gcs := .Values.colanode.storage.gcs }}
+{{- $gcs := .Values.server.storage.gcs }}
 - name: STORAGE_GCS_BUCKET
   value: {{ required "colanode.storage.gcs.bucket must be set when STORAGE_TYPE is gcs" $gcs.bucket | quote }}
 - name: STORAGE_GCS_PROJECT_ID
@@ -340,7 +325,7 @@ Colanode Server Environment Variables
 {{- end }}
 {{- end }}
 {{- if eq $storageType "azure" }}
-{{- $azure := .Values.colanode.storage.azure }}
+{{- $azure := .Values.server.storage.azure }}
 - name: STORAGE_AZURE_ACCOUNT
   value: {{ required "colanode.storage.azure.account must be set when STORAGE_TYPE is azure" $azure.account | quote }}
 - name: STORAGE_AZURE_CONTAINER_NAME
@@ -357,27 +342,27 @@ Colanode Server Environment Variables
 # SMTP configuration
 # ───────────────────────────────────────────────────────────────
 - name: SMTP_ENABLED
-  value: {{ ternary "true" "false" .Values.colanode.smtp.enabled | quote }}
-{{- if .Values.colanode.smtp.enabled }}
+  value: {{ ternary "true" "false" .Values.server.smtp.enabled | quote }}
+{{- if .Values.server.smtp.enabled }}
 - name: SMTP_HOST
-  value: {{ required "colanode.smtp.host must be set when smtp.enabled is true" .Values.colanode.smtp.host | quote }}
+  value: {{ required "colanode.smtp.host must be set when smtp.enabled is true" .Values.server.smtp.host | quote }}
 - name: SMTP_PORT
-  value: {{ required "colanode.smtp.port must be set when smtp.enabled is true" .Values.colanode.smtp.port | quote }}
+  value: {{ required "colanode.smtp.port must be set when smtp.enabled is true" .Values.server.smtp.port | quote }}
 - name: SMTP_USER
-{{- if or .Values.colanode.smtp.user.value .Values.colanode.smtp.user.existingSecret }}
-  {{- include "colanode.getValueOrSecret" (dict "key" "colanode.smtp.user" "value" .Values.colanode.smtp.user) | nindent 2 }}
+{{- if or .Values.server.smtp.user.value .Values.server.smtp.user.existingSecret }}
+  {{- include "colanode.getValueOrSecret" (dict "key" "colanode.smtp.user" "value" .Values.server.smtp.user) | nindent 2 }}
 {{- else }}
   value: ""
 {{- end }}
 - name: SMTP_PASSWORD
-{{- if or .Values.colanode.smtp.password.value .Values.colanode.smtp.password.existingSecret }}
-  {{- include "colanode.getValueOrSecret" (dict "key" "colanode.smtp.password" "value" .Values.colanode.smtp.password) | nindent 2 }}
+{{- if or .Values.server.smtp.password.value .Values.server.smtp.password.existingSecret }}
+  {{- include "colanode.getValueOrSecret" (dict "key" "colanode.smtp.password" "value" .Values.server.smtp.password) | nindent 2 }}
 {{- else }}
   value: ""
 {{- end }}
 - name: SMTP_EMAIL_FROM
-  value: {{ required "colanode.smtp.emailFrom must be set when smtp.enabled is true" .Values.colanode.smtp.emailFrom | quote }}
+  value: {{ required "colanode.smtp.emailFrom must be set when smtp.enabled is true" .Values.server.smtp.emailFrom | quote }}
 - name: SMTP_EMAIL_FROM_NAME
-  value: {{ .Values.colanode.smtp.emailFromName | quote }}
+  value: {{ .Values.server.smtp.emailFromName | quote }}
 {{- end }}
 {{- end }}

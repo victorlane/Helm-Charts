@@ -5,8 +5,21 @@ nameOverride: ''
 # -- Override the full name of the deployed resources, defaults to a combination of the release name and the name for the selector labels
 fullnameOverride: ''
 
-# Core Colanode Configuration
-colanode:
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+  name: ''
+  # -- Automatically mount a ServiceAccount's API credentials?
+  automount: true
+
+# Colanode Server (Backend API)
+server:
+  # -- Enable server deployment
+  enabled: true
+
   # -- Number of replicas for the Colanode server deployment
   replicaCount: 1
 
@@ -21,16 +34,6 @@ colanode:
   # -- Image pull secrets
   imagePullSecrets: []
 
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template
-    name: ''
-    # -- Automatically mount a ServiceAccount's API credentials?
-    automount: true
-
   # -- Pod annotations (empty by default)
   podAnnotations: {}
 
@@ -44,32 +47,23 @@ colanode:
     port: 3000
 
   ingress:
-    # -- Enable ingress controller resource
+    # -- Enable ingress controller resource for server
     enabled: false
     # -- Ingress controller class name
     className: ''
     # -- Ingress annotations
     annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
     # -- Ingress hostnames
     hosts:
-    - host: chart-example.local
+    - host: api.chart-example.local
       paths:
       - path: /
         pathType: Prefix
     # -- Ingress TLS configuration
     tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
 
-    # -- Resource requests and limits (empty by default for flexibility)
+  # -- Resource requests and limits (empty by default for flexibility)
   resources: {}
-
-  # -- Horizontal Pod Autoscaler (disabled by default for simplicity)
-  autoscaling:
-    enabled: false
 
   # -- Colanode server configuration
   config:
@@ -162,13 +156,13 @@ colanode:
         - ReadWriteOnce
 
     s3:
-      # -- Custom endpoint for S3-compatible storage. Leave empty to use the bundled MinIO service hostname
+      # -- Custom endpoint for S3-compatible storage (required when STORAGE_TYPE is s3)
       endpoint: ''
       # -- Bucket name to use when STORAGE_TYPE is s3
       bucket: colanode
       # -- Region for the S3 bucket
       region: us-east-1
-      # -- Force path-style URLs (required for MinIO and most S3-compatible providers)
+      # -- Force path-style URLs (required for most S3-compatible providers)
       forcePathStyle: true
       accessKey:
         # -- Optional plain-text access key (prefer using secrets in production)
@@ -214,6 +208,56 @@ colanode:
         existingSecret: ''
         # -- Key within the existing secret that stores the account key
         secretKey: ''
+
+# Colanode Web (Frontend)
+web:
+  # -- Enable web deployment
+  enabled: true
+
+  # -- Number of replicas for the web deployment
+  replicaCount: 1
+
+  image:
+    # -- Colanode web image repository
+    repository: ghcr.io/colanode/web
+    # -- Colanode web image pull policy
+    pullPolicy: Always
+    # -- Colanode web image tag
+    tag: 'latest'
+
+  # -- Image pull secrets
+  imagePullSecrets: []
+
+  # -- Pod annotations (empty by default)
+  podAnnotations: {}
+
+  # -- Pod labels (empty by default)
+  podLabels: {}
+
+  service:
+    # -- Kubernetes service type
+    type: ClusterIP
+    # -- Kubernetes service port
+    port: 80
+
+  ingress:
+    # -- Enable ingress controller resource for web
+    enabled: false
+    # -- Ingress controller class name
+    className: ''
+    # -- Ingress annotations
+    annotations: {}
+    # -- Ingress hostnames
+    hosts:
+    - host: chart-example.local
+      paths:
+      - path: /
+        pathType: Prefix
+    # -- Ingress TLS configuration
+    tls: []
+
+  # -- Resource requests and limits (empty by default for flexibility)
+  resources: {}
 
 global:
   security:
@@ -298,24 +342,3 @@ valkey:
     type: ClusterIP
     # -- Valkey service port
     port: 6379
-
-# MinIO object storage
-minio:
-  enabled: false
-  auth:
-    rootUser: 'minioadmin'
-    # password: ""  # Leave empty to auto-generate
-    # existingSecret: ""  # Will use auto-generated secret
-    rootUserKey: 'root-user'
-    # -- Key within the existing secret that holds the root password
-    rootPasswordKey: 'root-password'
-  persistence:
-    enabled: true
-    size: 10Gi
-  service:
-    type: ClusterIP
-  # Create default buckets for Colanode
-  defaultBuckets: 'colanode'
-  extraArgs:
-  - '--console-address'
-  - ':9001'
