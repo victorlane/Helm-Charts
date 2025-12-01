@@ -284,6 +284,31 @@ entries:
   colanode:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-12-01T17:58:34.358992182Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.7.4
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.0.10
+    description: A Helm chart for Colanode
+    digest: 8a192ce05f77965ea7929c13dc363a19414e9e90554bcbf9ccfeef98bed3cb6b
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - collaboration
+    name: colanode
+    sources:
+    - https://github.com/colanode/colanode/tree/main/hosting/kubernetes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/colanode-0.2.4/colanode-0.2.4.tgz
+    version: 0.2.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-12-01T17:44:09.463047175Z"
     dependencies:
     - condition: postgresql.enabled
@@ -582,4 +607,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2025-12-01T17:44:09.463083142Z"
+generated: "2025-12-01T17:58:34.359027238Z"
