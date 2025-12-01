@@ -244,6 +244,7 @@ Colanode Server Environment Variables
 # ───────────────────────────────────────────────────────────────
 # Redis/Valkey Configuration
 # ───────────────────────────────────────────────────────────────
+{{- if .Values.valkey.auth.enabled }}
 - name: REDIS_PASSWORD
   {{- if .Values.valkey.auth.existingSecret }}
   valueFrom:
@@ -258,6 +259,10 @@ Colanode Server Environment Variables
   {{- end }}
 - name: REDIS_URL
   value: "redis://:$(REDIS_PASSWORD)@{{ include "colanode.redis.hostname" . }}:6379/{{ .Values.server.config.REDIS_DB }}"
+{{- else }}
+- name: REDIS_URL
+  value: "redis://{{ include "colanode.redis.hostname" . }}:6379/{{ .Values.server.config.REDIS_DB }}"
+{{- end }}
 - name: REDIS_DB
   value: {{ .Values.server.config.REDIS_DB | quote }}
 - name: REDIS_JOBS_QUEUE_NAME
