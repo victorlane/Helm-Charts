@@ -109,7 +109,7 @@ Return the PostgreSQL username
 Return the Redis hostname
 */}}
 {{- define "colanode.redis.hostname" -}}
-{{- printf "%s-redis-primary" .Release.Name -}}
+{{- printf "%s-valkey" (include "colanode.fullname" .) -}}
 {{- end }}
 
 {{/*
@@ -250,18 +250,16 @@ Colanode Server Environment Variables
 # Redis/Valkey Configuration
 # ───────────────────────────────────────────────────────────────
 - name: REDIS_PASSWORD
-  {{- if .Values.redis.auth.existingSecret }}
-  {{- include "colanode.getRequiredValueOrSecret" (dict
-        "key" "redis.auth.password"
-        "value" (dict
-          "value"        .Values.redis.auth.password
-          "existingSecret" .Values.redis.auth.existingSecret
-          "secretKey"    .Values.redis.auth.secretKeys.redisPasswordKey )) | nindent 2 }}
+  {{- if .Values.valkey.auth.existingSecret }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.valkey.auth.existingSecret }}
+      key: {{ .Values.valkey.auth.passwordKey }}
   {{- else }}
   valueFrom:
     secretKeyRef:
-      name: {{ .Release.Name }}-redis
-      key: {{ .Values.redis.auth.secretKeys.redisPasswordKey }}
+      name: {{ include "colanode.fullname" . }}-valkey
+      key: {{ .Values.valkey.auth.passwordKey }}
   {{- end }}
 - name: REDIS_URL
   value: "redis://:$(REDIS_PASSWORD)@{{ include "colanode.redis.hostname" . }}:6379/{{ .Values.colanode.config.REDIS_DB }}"

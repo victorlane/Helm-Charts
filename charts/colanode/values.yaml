@@ -251,22 +251,53 @@ postgresql:
       enabled: true
       size: 8Gi
 
-# Redis (alias for Valkey)
-redis:
-  # -- Enable Redis deployment
+# Valkey (Redis-compatible)
+valkey:
+  # -- Enable Valkey deployment
   enabled: true
+
+  image:
+    # -- Valkey image repository
+    repository: valkey/valkey
+    # -- Valkey image tag
+    tag: '9-alpine'
+    # -- Valkey image pull policy
+    pullPolicy: IfNotPresent
+
+  # -- Valkey architecture: standalone or cluster (only standalone is currently supported)
   architecture: standalone
+
   auth:
+    # -- Enable authentication
     enabled: true
-    username: default
-    # password: ""  # Leave empty to auto-generate
-    # existingSecret: ""  # Will use auto-generated secret
-    secretKeys:
-      redisPasswordKey: 'valkey-password'
-  master:
-    persistence:
-      enabled: true
-      size: 8Gi
+    # -- Password for Valkey authentication (leave empty to auto-generate)
+    password: ''
+    # -- Name of an existing secret containing the password
+    existingSecret: ''
+    # -- Key in the existing secret that contains the password
+    passwordKey: 'valkey-password'
+
+  persistence:
+    # -- Enable persistence using PVC
+    enabled: true
+    # -- Use an existing PVC
+    existingClaim: ''
+    # -- PVC storage class
+    storageClass: ''
+    # -- PVC size
+    size: 8Gi
+    # -- PVC access modes
+    accessModes:
+    - ReadWriteOnce
+
+  # -- Valkey resource requests and limits
+  resources: {}
+
+  service:
+    # -- Valkey service type
+    type: ClusterIP
+    # -- Valkey service port
+    port: 6379
 
 # MinIO object storage
 minio:

@@ -1,0 +1,109 @@
+{{- if .Values.valkey.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "colanode.fullname" . }}-valkey
+  labels:
+    {{- include "colanode.labels" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+spec:
+  serviceName: {{ include "colanode.fullname" . }}-valkey-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "colanode.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: valkey
+  template:
+    metadata:
+      labels:
+        {{- include "colanode.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: valkey
+    spec:
+      containers:
+      - name: valkey
+        image: "{{ .Values.valkey.image.repository }}:{{ .Values.valkey.image.tag }}"
+        imagePullPolicy: {{ .Values.valkey.image.pullPolicy }}
+        {{- if .Values.valkey.auth.enabled }}
+        command:
+        - valkey-server
+        - /etc/valkey/valkey.conf
+        - --requirepass
+        - $(VALKEY_PASSWORD)
+        {{- end }}
+        env:
+        {{- if .Values.valkey.auth.enabled }}
+        - name: VALKEY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ if .Values.valkey.auth.existingSecret }}{{ .Values.valkey.auth.existingSecret }}{{ else }}{{ include "colanode.fullname" . }}-valkey{{ end }}
+              key: {{ .Values.valkey.auth.passwordKey }}
+        {{- end }}
+        ports:
+        - name: valkey
+          containerPort: 6379
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: valkey
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - |
+              {{- if .Values.valkey.auth.enabled }}
+              valkey-cli -a "$VALKEY_PASSWORD" ping | grep -q PONG
+              {{- else }}
+              valkey-cli ping | grep -q PONG
+              {{- end }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        {{- if .Values.valkey.persistence.enabled }}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        {{- if .Values.valkey.auth.enabled }}
+        - name: config
+          mountPath: /etc/valkey
+        {{- end }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.valkey.resources | nindent 10 }}
+      volumes:
+      {{- if .Values.valkey.auth.enabled }}
+      - name: config
+        configMap:
+          name: {{ include "colanode.fullname" . }}-valkey
+      {{- end }}
+      {{- if not .Values.valkey.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
+  {{- if .Values.valkey.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        {{- include "colanode.labels" . | nindent 8 }}
+        app.kubernetes.io/component: valkey
+    spec:
+      accessModes:
+        {{- range .Values.valkey.persistence.accessModes }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- if .Values.valkey.persistence.storageClass }}
+      storageClassName: {{ .Values.valkey.persistence.storageClass | quote }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.valkey.persistence.size | quote }}
+  {{- end }}
+{{- end }}
