@@ -284,6 +284,22 @@ entries:
   colanode:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-12-01T19:26:22.00948926Z"
+    description: A Helm chart for Colanode
+    digest: af43123e9d93096ed94677e5213baef535c39900ec4315d4d8d859face88b818
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - collaboration
+    name: colanode
+    sources:
+    - https://github.com/colanode/colanode/tree/main/hosting/kubernetes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/colanode-0.3.3/colanode-0.3.3.tgz
+    version: 0.3.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-12-01T19:19:57.739290254Z"
     description: A Helm chart for Colanode
     digest: 14b891f4e7d10966e602d8cbc6ef0f5433c7c68ec67f6d9252c181c8bbb6b50f
@@ -748,4 +764,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2025-12-01T19:19:57.739360886Z"
+generated: "2025-12-01T19:26:22.009569827Z"
