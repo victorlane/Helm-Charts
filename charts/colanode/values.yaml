@@ -228,20 +228,9 @@ postgresql:
 
   # -- External PostgreSQL configuration (used when enabled: false)
   external:
-    # -- External PostgreSQL host
-    host: ''
-    # -- External PostgreSQL port
-    port: 5432
-    # -- Database name
-    database: 'colanode_db'
-    # -- PostgreSQL username
-    username: 'postgres'
-    # -- PostgreSQL password (plain text - prefer using existingSecret)
-    password: ''
-    # -- Name of existing secret containing PostgreSQL password
+    # -- Name of existing secret containing PostgreSQL connection details
+    # The secret should contain keys: endpoint, port, username, password
     existingSecret: ''
-    # -- Key within the existing secret that contains the password
-    existingSecretKey: 'postgres-password'
 
   # Internal PostgreSQL deployment settings (used when enabled: true)
   image:

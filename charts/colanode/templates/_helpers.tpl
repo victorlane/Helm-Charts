@@ -68,7 +68,7 @@ Return the PostgreSQL hostname
 {{- if .Values.postgresql.enabled -}}
 {{- printf "%s-postgresql" .Release.Name -}}
 {{- else -}}
-{{- required "postgresql.external.host is required when postgresql.enabled is false" .Values.postgresql.external.host -}}
+{{- required "postgresql.external.existingSecret is required when postgresql.enabled is false" .Values.postgresql.external.existingSecret -}}
 {{- end -}}
 {{- end }}
 
@@ -79,7 +79,7 @@ Return the PostgreSQL port
 {{- if .Values.postgresql.enabled -}}
 {{- print "5432" -}}
 {{- else -}}
-{{- .Values.postgresql.external.port -}}
+{{- required "postgresql.external.existingSecret is required when postgresql.enabled is false" .Values.postgresql.external.existingSecret -}}
 {{- end -}}
 {{- end }}
 
@@ -90,7 +90,7 @@ Return the PostgreSQL database name
 {{- if .Values.postgresql.enabled -}}
 {{- .Values.postgresql.auth.database -}}
 {{- else -}}
-{{- .Values.postgresql.external.database -}}
+{{- .Values.postgresql.auth.database -}}
 {{- end -}}
 {{- end }}
 
@@ -101,7 +101,7 @@ Return the PostgreSQL username
 {{- if .Values.postgresql.enabled -}}
 {{- .Values.postgresql.auth.username -}}
 {{- else -}}
-{{- .Values.postgresql.external.username -}}
+{{- required "postgresql.external.existingSecret is required when postgresql.enabled is false" .Values.postgresql.external.existingSecret -}}
 {{- end -}}
 {{- end }}
 
@@ -213,26 +213,38 @@ Colanode Server Environment Variables
 # ───────────────────────────────────────────────────────────────
 # PostgreSQL Configuration
 # ───────────────────────────────────────────────────────────────
-- name: POSTGRES_PASSWORD
 {{- if .Values.postgresql.enabled }}
+- name: POSTGRES_PASSWORD
   valueFrom:
     secretKeyRef:
       name: {{ .Release.Name }}-postgresql
       key: postgres-password
+- name: POSTGRES_URL
+  value: "postgres://{{ include "colanode.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "colanode.postgresql.hostname" . }}:{{ include "colanode.postgresql.port" . }}/{{ include "colanode.postgresql.database" . }}"
 {{- else }}
-  {{- if .Values.postgresql.external.existingSecret }}
+- name: POSTGRES_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ required "postgresql.external.existingSecret is required when postgresql.enabled is false" .Values.postgresql.external.existingSecret }}
+      key: endpoint
+- name: POSTGRES_PORT
   valueFrom:
     secretKeyRef:
       name: {{ .Values.postgresql.external.existingSecret }}
-      key: {{ .Values.postgresql.external.existingSecretKey }}
-  {{- else if .Values.postgresql.external.password }}
-  value: {{ .Values.postgresql.external.password | quote }}
-  {{- else }}
-  {{- fail "postgresql.external.password or postgresql.external.existingSecret is required when postgresql.enabled is false" }}
-  {{- end }}
-{{- end }}
+      key: port
+- name: POSTGRES_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.postgresql.external.existingSecret }}
+      key: username
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.postgresql.external.existingSecret }}
+      key: password
 - name: POSTGRES_URL
-  value: "postgres://{{ include "colanode.postgresql.username" . }}:$(POSTGRES_PASSWORD)@{{ include "colanode.postgresql.hostname" . }}:{{ include "colanode.postgresql.port" . }}/{{ include "colanode.postgresql.database" . }}"
+  value: "postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/{{ include "colanode.postgresql.database" . }}"
+{{- end }}
 
 # ───────────────────────────────────────────────────────────────
 # Redis/Valkey Configuration
