@@ -284,6 +284,22 @@ entries:
   colanode:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-12-01T18:41:29.733425921Z"
+    description: A Helm chart for Colanode
+    digest: 973d5822e8168fea3c74042314f134d4098a7513bc7cbbe62254e087fb942956
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - collaboration
+    name: colanode
+    sources:
+    - https://github.com/colanode/colanode/tree/main/hosting/kubernetes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/colanode-0.3.0/colanode-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2025-12-01T18:25:55.612249749Z"
     dependencies:
     - condition: postgresql.enabled
@@ -638,6 +654,24 @@ entries:
   operately:
   - apiVersion: v2
     appVersion: 1.1.0
+    created: "2025-12-01T18:41:29.854446066Z"
+    description: Helm chart for Operately
+    digest: 346977422bdf7e2b1a0fab94b8673cab1245b8f914264f3c08089054d81a6cdd
+    home: https://github.com/victorlane/Helm-Charts
+    keywords:
+    - productivity
+    - task-management
+    - operately
+    name: operately
+    sources:
+    - https://github.com/open-chart/helm-charts
+    - https://github.com/operately/operately
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/operately-0.0.12/operately-0.0.12.tgz
+    version: 0.0.12
+  - apiVersion: v2
+    appVersion: 1.1.0
     created: "2025-11-28T17:10:15.704149179Z"
     description: Helm chart for Operately
     digest: e489064fec29faf08b07b7928b2de881493873a615e74255a1ce7c184a3b26ba
@@ -682,4 +716,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2025-12-01T18:25:55.612313598Z"
+generated: "2025-12-01T18:41:29.854521387Z"
