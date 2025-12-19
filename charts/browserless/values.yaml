@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: browserless/chrome
+  repository: ghcr.io/browserless/chrome:latest
   pullPolicy: IfNotPresent
   tag: ""
 
