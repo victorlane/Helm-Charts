@@ -2,7 +2,7 @@ apiVersion: v2
 name: browserless
 description: Helm Chart to deploy Browserless
 type: application
-version: 0.1.4
+version: 0.1.5
 appVersion: "v2.34.1"
 maintainers:
 - name: Victor Brinkhorst
