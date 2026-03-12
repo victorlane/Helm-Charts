@@ -40,10 +40,10 @@ The following table lists the configurable parameters of the Browserless chart a
 | Parameter          | Description                          | Default              |
 | ------------------ | ------------------------------------ | -------------------- |
 | `replicaCount`     | Number of browserless pods           | `1`                  |
-| `image.repository` | Image repository                     | `browserless/chrome` |
+| `image.repository` | Image repository                     | `ghcr.io/browserless/chromium` |
 | `image.tag`        | Image tag                            | `latest`             |
 | `service.type`     | Kubernetes service type              | `ClusterIP`          |
-| `service.port`     | Service port                         | `3000`               |
+| `service.port`     | Service port                         | `80`                 |
 | `resources`        | CPU/Memory resource requests/limits  | `{}`                 |
 | `nodeSelector`     | Node labels for pod assignment       | `{}`                 |
 | `tolerations`      | Toleration labels for pod assignment | `[]`                 |
@@ -57,7 +57,7 @@ To override values, use a custom `values.yaml` or `--set` flag:
 
 ```console
 helm install my-release victorlane/browserless \
-  --set replicaCount=2,image.tag=1.56-chrome-stable
+  --set replicaCount=2,image.tag=v2.43.0
 ```
 
 ## Persistence

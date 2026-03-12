@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/browserless/chrome
+  repository: ghcr.io/browserless/chromium
   pullPolicy: IfNotPresent
-  tag: "latest"
+  tag: "v2.43.0"
 
 imagePullSecrets: []
 

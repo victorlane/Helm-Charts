@@ -2,8 +2,8 @@ apiVersion: v2
 name: browserless
 description: Helm Chart to deploy Browserless
 type: application
-version: 0.1.5
-appVersion: "v2.34.1"
+version: 0.2.0
+appVersion: "v2.43.0"
 maintainers:
 - name: Victor Brinkhorst
   email: victor@bmlabs.eu
@@ -16,4 +16,4 @@ keywords:
 - selenium
 - puppeteer
 sources:
-- https://github.com/browserless/chrome
+- https://github.com/browserless/browserless
