@@ -37,17 +37,17 @@ A major chart version change (like v1.2.3 -> v2.0.0) indicates that there is an 
 
 The following table lists the configurable parameters of the Browserless chart and their default values. See `values.yaml` for the full list.
 
-| Parameter          | Description                          | Default              |
-| ------------------ | ------------------------------------ | -------------------- |
-| `replicaCount`     | Number of browserless pods           | `1`                  |
+| Parameter          | Description                          | Default                        |
+| ------------------ | ------------------------------------ | ------------------------------ |
+| `replicaCount`     | Number of browserless pods           | `1`                            |
 | `image.repository` | Image repository                     | `ghcr.io/browserless/chromium` |
-| `image.tag`        | Image tag                            | `latest`             |
-| `service.type`     | Kubernetes service type              | `ClusterIP`          |
-| `service.port`     | Service port                         | `80`                 |
-| `resources`        | CPU/Memory resource requests/limits  | `{}`                 |
-| `nodeSelector`     | Node labels for pod assignment       | `{}`                 |
-| `tolerations`      | Toleration labels for pod assignment | `[]`                 |
-| `affinity`         | Affinity settings for pod assignment | `{}`                 |
+| `image.tag`        | Image tag                            | `latest`                       |
+| `service.type`     | Kubernetes service type              | `ClusterIP`                    |
+| `service.port`     | Service port                         | `80`                           |
+| `resources`        | CPU/Memory resource requests/limits  | `{}`                           |
+| `nodeSelector`     | Node labels for pod assignment       | `{}`                           |
+| `tolerations`      | Toleration labels for pod assignment | `[]`                           |
+| `affinity`         | Affinity settings for pod assignment | `{}`                           |
 
 _See `values.yaml` for all available configuration options._
 
