@@ -662,6 +662,31 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/colanode-0.2.0/colanode-0.2.0.tgz
     version: 0.2.0
+  flyan-data:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-12T20:59:57.537791026Z"
+    description: Continuous Ryanair price-history scraper and read API (Django + ASGI
+      + TimescaleDB)
+    digest: 13f1271e7110e1bcf3a14ee4e03a1d7ad5f42bbb7a82bf8af53b5aac06ec15f8
+    home: https://github.com/victorlane/flyan-data
+    keywords:
+    - flyan
+    - ryanair
+    - flights
+    - timescaledb
+    - scraper
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: flyan-data
+    sources:
+    - https://github.com/victorlane/flyan-data
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/flyan-data-0.1.0/flyan-data-0.1.0.tgz
+    version: 0.1.0
   n8n:
   - apiVersion: v2
     appVersion: 1.115.1
@@ -856,4 +881,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2026-03-12T19:08:22.910772855Z"
+generated: "2026-06-12T20:59:57.537854781Z"
