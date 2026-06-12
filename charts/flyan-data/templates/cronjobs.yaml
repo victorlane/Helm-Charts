@@ -1,0 +1,59 @@
+{{- $contexts := list
+    (dict "name" "sync-network"             "cmd" "sync_network"             "schedule" .Values.flyanData.cron.syncNetwork.schedule)
+    (dict "name" "plan-full-sweep"          "cmd" "plan_full_sweep"          "schedule" .Values.flyanData.cron.planFullSweep.schedule)
+    (dict "name" "plan-hot-routes"          "cmd" "plan_hot_routes"          "schedule" .Values.flyanData.cron.planHotRoutes.schedule)
+    (dict "name" "test-proxies"             "cmd" "test_proxies"             "schedule" .Values.flyanData.cron.testProxies.schedule)
+    (dict "name" "detect-anomalies"         "cmd" "detect_anomalies"         "schedule" .Values.flyanData.cron.detectAnomalies.schedule)
+    (dict "name" "refresh-current-cheapest" "cmd" "refresh_current_cheapest" "schedule" .Values.flyanData.cron.refreshCurrentCheapest.schedule)
+}}
+{{- range $ctx := $contexts }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Release.Name }}-{{ $ctx.name }}
+  labels:
+    {{- include "flyan-data.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: cron
+spec:
+  schedule: {{ $ctx.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            {{- include "flyan-data.labels" $ | nindent 12 }}
+            app.kubernetes.io/component: cron
+            cron.flyan-data/job: {{ $ctx.name }}
+        spec:
+          restartPolicy: Never
+          {{- with $.Values.flyanData.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: {{ $ctx.name }}
+              image: {{ include "flyan-data.image" $ }}
+              imagePullPolicy: {{ $.Values.flyanData.image.pullPolicy }}
+              command:
+                - python
+                - manage.py
+                - {{ $ctx.cmd }}
+              env:
+                {{- include "flyan-data.env" $ | nindent 16 }}
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"
+{{- end }}

@@ -1,0 +1,124 @@
+flyanData:
+  image:
+    repository: ghcr.io/victorlane/flyan-data
+    tag: ""           # defaults to .Chart.AppVersion
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  # Three logical workloads from the same image. The API serves HTTP; the
+  # scraper is a long-running worker that drains the task queue; the
+  # planner is a CronJob that enqueues fresh work + refreshes derived
+  # tables.
+  api:
+    replicas: 2
+    workers: 2          # uvicorn --workers
+    port: 8000
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "768Mi"
+    podDisruptionBudget:
+      enabled: true
+      minAvailable: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 6
+      targetCPUUtilizationPercentage: 70
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  scraper:
+    enabled: true
+    replicas: 1
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # CronJobs that plan work and refresh derived tables. Disable individually
+  # if you want to drive them externally.
+  cron:
+    syncNetwork:
+      schedule: "0 2 * * *"     # daily 02:00
+    planFullSweep:
+      schedule: "0 3 * * *"     # daily 03:00
+    planHotRoutes:
+      schedule: "0 * * * *"     # hourly
+    testProxies:
+      schedule: "*/5 * * * *"
+    detectAnomalies:
+      schedule: "*/15 * * * *"
+    refreshCurrentCheapest:
+      schedule: "*/5 * * * *"
+
+  ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    hosts:
+      - host: flyan-data.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: tls-flyan-data
+        hosts:
+          - flyan-data.example.com
+
+  # All secrets are externalised. The chart never generates a password.
+  # Provide either a literal value or a (secretName, secretKey) pair.
+  secrets:
+    DATABASE_URL:
+      value: ""
+      secretName: ""
+      secretKey: ""
+    REDIS_URL:
+      value: ""
+      secretName: ""
+      secretKey: ""
+    DJANGO_SECRET_KEY:
+      value: ""
+      secretName: ""
+      secretKey: ""
+
+  env:
+    DJANGO_SETTINGS_MODULE: "flyan_data.settings.prod"
+    DJANGO_DEBUG: "0"
+    LOG_LEVEL: "INFO"
+    FLYAN_CURRENCY: "EUR"
+    SCRAPE_WINDOW_DAYS: "90"
+    HOT_ROUTES_LIMIT: "200"
+    TASK_CLAIM_BATCH: "32"
+    API_MAX_PAGE_SIZE: "1000"
+    API_DEFAULT_PAGE_SIZE: "100"
+    POSTGRES_POOL_MIN: "1"
+    POSTGRES_POOL_MAX: "8"
+    POSTGRES_CONN_MAX_AGE: "600"
+    # When sitting behind one or more proxies (cert-manager + Traefik in our
+    # case), list each hop's IP so ProxyAwareRemoteAddr returns the real
+    # client IP for per-IP rate limiting.
+    TRUSTED_PROXY_IPS: "127.0.0.1"
+    DJANGO_ALLOWED_HOSTS: "flyan-data.example.com"
+
+  # Prometheus scrape annotations. The Hetzner cluster runs SigNoz and
+  # discovers pods that opt-in via these annotations (see existing patterns
+  # in the bmlabs cluster postgres setup).
+  metrics:
+    enabled: true
+    port: 8000
+    path: /metrics
+    podAnnotations:
+      signoz.io/scrape: "true"
+      signoz.io/port: "8000"
+      signoz.io/path: /metrics
