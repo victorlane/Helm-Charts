@@ -102,8 +102,6 @@ flyanData:
     TASK_CLAIM_BATCH: "32"
     API_MAX_PAGE_SIZE: "1000"
     API_DEFAULT_PAGE_SIZE: "100"
-    POSTGRES_POOL_MIN: "1"
-    POSTGRES_POOL_MAX: "8"
     POSTGRES_CONN_MAX_AGE: "600"
     # When sitting behind one or more proxies (cert-manager + Traefik in our
     # case), list each hop's IP so ProxyAwareRemoteAddr returns the real
