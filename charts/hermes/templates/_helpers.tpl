@@ -1,10 +1,10 @@
 {{/*
 Common labels.
 */}}
-{{- define "flyan-data.labels" -}}
+{{- define "hermes.labels" -}}
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/version: {{ default .Chart.AppVersion .Values.flyanData.image.tag | quote }}
+app.kubernetes.io/version: {{ default .Chart.AppVersion .Values.hermes.image.tag | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
@@ -12,8 +12,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Image reference resolved to {{ repository }}:{{ tag-or-appVersion }}.
 */}}
-{{- define "flyan-data.image" -}}
-{{ .Values.flyanData.image.repository }}:{{ default .Chart.AppVersion .Values.flyanData.image.tag }}
+{{- define "hermes.image" -}}
+{{ .Values.hermes.image.repository }}:{{ default .Chart.AppVersion .Values.hermes.image.tag }}
 {{- end }}
 
 
@@ -24,20 +24,20 @@ for each secret). The caller is responsible for indenting the whole
 block to the parent's depth, like:
 
   env:
-    {{- include "flyan-data.env" . | nindent 4 }}
+    {{- include "hermes.env" . | nindent 4 }}
 
 Internally we *do not* indent — the include returns lines starting at
 column 0 so `nindent` at the call site produces uniform indentation.
 */}}
-{{- define "flyan-data.env" -}}
-{{- range $key, $value := .Values.flyanData.env }}
+{{- define "hermes.env" -}}
+{{- range $key, $value := .Values.hermes.env }}
 - name: {{ $key }}
   value: {{ $value | quote }}
 {{- end }}
 {{- $secrets := list
-    (dict "name" "DATABASE_URL"      "spec" .Values.flyanData.secrets.DATABASE_URL)
-    (dict "name" "REDIS_URL"         "spec" .Values.flyanData.secrets.REDIS_URL)
-    (dict "name" "DJANGO_SECRET_KEY" "spec" .Values.flyanData.secrets.DJANGO_SECRET_KEY)
+    (dict "name" "DATABASE_URL"      "spec" .Values.hermes.secrets.DATABASE_URL)
+    (dict "name" "REDIS_URL"         "spec" .Values.hermes.secrets.REDIS_URL)
+    (dict "name" "DJANGO_SECRET_KEY" "spec" .Values.hermes.secrets.DJANGO_SECRET_KEY)
 }}
 {{- range $s := $secrets }}
 - name: {{ $s.name }}

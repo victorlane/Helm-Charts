@@ -1,12 +1,12 @@
-{{- if .Values.flyanData.api.podDisruptionBudget.enabled }}
+{{- if .Values.hermes.api.podDisruptionBudget.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ .Release.Name }}-api
   labels:
-    {{- include "flyan-data.labels" . | nindent 4 }}
+    {{- include "hermes.labels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.flyanData.api.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.hermes.api.podDisruptionBudget.minAvailable }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Chart.Name }}

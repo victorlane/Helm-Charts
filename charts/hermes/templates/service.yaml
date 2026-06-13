@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-api
   labels:
-    {{- include "flyan-data.labels" . | nindent 4 }}
+    {{- include "hermes.labels" . | nindent 4 }}
     app.kubernetes.io/component: api
 spec:
   type: ClusterIP

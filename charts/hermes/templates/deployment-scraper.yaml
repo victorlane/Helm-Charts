@@ -1,13 +1,13 @@
-{{- if .Values.flyanData.scraper.enabled }}
+{{- if .Values.hermes.scraper.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-scraper
   labels:
-    {{- include "flyan-data.labels" . | nindent 4 }}
+    {{- include "hermes.labels" . | nindent 4 }}
     app.kubernetes.io/component: scraper
 spec:
-  replicas: {{ .Values.flyanData.scraper.replicas }}
+  replicas: {{ .Values.hermes.scraper.replicas }}
   strategy:
     type: Recreate     # never run 2 concurrent scrapers per replica boundary
   selector:
@@ -18,48 +18,48 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "flyan-data.labels" . | nindent 8 }}
+        {{- include "hermes.labels" . | nindent 8 }}
         app.kubernetes.io/component: scraper
       annotations:
-        {{- if .Values.flyanData.metrics.enabled }}
-        {{- toYaml .Values.flyanData.metrics.podAnnotations | nindent 8 }}
+        {{- if .Values.hermes.metrics.enabled }}
+        {{- toYaml .Values.hermes.metrics.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.flyanData.image.pullSecrets }}
+      {{- with .Values.hermes.image.pullSecrets }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
         {{- end }}
       {{- end }}
-      {{- with .Values.flyanData.scraper.nodeSelector }}
+      {{- with .Values.hermes.scraper.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.flyanData.scraper.tolerations }}
+      {{- with .Values.hermes.scraper.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: scraper
-          image: {{ include "flyan-data.image" . }}
-          imagePullPolicy: {{ .Values.flyanData.image.pullPolicy }}
+          image: {{ include "hermes.image" . }}
+          imagePullPolicy: {{ .Values.hermes.image.pullPolicy }}
           # The scraper drains the queue and sleeps when idle, so we run it
           # without --idle-exit. Also expose metrics on a side server so
           # the SigNoz pod-discovery annotations still see /metrics.
           command: ["sh", "-c"]
           args:
             - |
-              python -m flyan_data.scraper_metrics_server &
+              python -m hermes.scraper_metrics_server &
               exec python manage.py run_scraper
           ports:
             - name: metrics
               containerPort: 8000
           env:
-            {{- include "flyan-data.env" . | nindent 12 }}
-            {{- range $k, $v := .Values.flyanData.scraper.extraEnv }}
+            {{- include "hermes.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.hermes.scraper.extraEnv }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
           resources:
-            {{- toYaml .Values.flyanData.scraper.resources | nindent 12 }}
+            {{- toYaml .Values.hermes.scraper.resources | nindent 12 }}
 {{- end }}

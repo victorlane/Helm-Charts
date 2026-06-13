@@ -1,24 +1,24 @@
-{{- if .Values.flyanData.ingress.enabled }}
+{{- if .Values.hermes.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}
   labels:
-    {{- include "flyan-data.labels" . | nindent 4 }}
-  {{- with .Values.flyanData.ingress.annotations }}
+    {{- include "hermes.labels" . | nindent 4 }}
+  {{- with .Values.hermes.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- with .Values.flyanData.ingress.className }}
+  {{- with .Values.hermes.ingress.className }}
   ingressClassName: {{ . | quote }}
   {{- end }}
-  {{- with .Values.flyanData.ingress.tls }}
+  {{- with .Values.hermes.ingress.tls }}
   tls:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   rules:
-    {{- range .Values.flyanData.ingress.hosts }}
+    {{- range .Values.hermes.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:

@@ -1,6 +1,6 @@
-flyanData:
+hermes:
   image:
-    repository: ghcr.io/victorlane/flyan-data
+    repository: harbor.bmlabs.eu/victorlane/hermes
     tag: ""           # defaults to .Chart.AppVersion
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -67,14 +67,14 @@ flyanData:
     className: ""
     annotations: {}
     hosts:
-      - host: flyan-data.example.com
+      - host: hermes.example.com
         paths:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: tls-flyan-data
+      - secretName: tls-hermes
         hosts:
-          - flyan-data.example.com
+          - hermes.example.com
 
   # All secrets are externalised. The chart never generates a password.
   # Provide either a literal value or a (secretName, secretKey) pair.
@@ -93,7 +93,7 @@ flyanData:
       secretKey: ""
 
   env:
-    DJANGO_SETTINGS_MODULE: "flyan_data.settings.prod"
+    DJANGO_SETTINGS_MODULE: "hermes.settings.prod"
     DJANGO_DEBUG: "0"
     LOG_LEVEL: "INFO"
     FLYAN_CURRENCY: "EUR"
@@ -107,7 +107,7 @@ flyanData:
     # case), list each hop's IP so ProxyAwareRemoteAddr returns the real
     # client IP for per-IP rate limiting.
     TRUSTED_PROXY_IPS: "127.0.0.1"
-    DJANGO_ALLOWED_HOSTS: "flyan-data.example.com"
+    DJANGO_ALLOWED_HOSTS: "hermes.example.com"
 
   # Prometheus scrape annotations. The Hetzner cluster runs SigNoz and
   # discovers pods that opt-in via these annotations (see existing patterns

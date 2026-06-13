@@ -1,0 +1,59 @@
+{{- $contexts := list
+    (dict "name" "sync-network"             "cmd" "sync_network"             "schedule" .Values.hermes.cron.syncNetwork.schedule)
+    (dict "name" "plan-full-sweep"          "cmd" "plan_full_sweep"          "schedule" .Values.hermes.cron.planFullSweep.schedule)
+    (dict "name" "plan-hot-routes"          "cmd" "plan_hot_routes"          "schedule" .Values.hermes.cron.planHotRoutes.schedule)
+    (dict "name" "test-proxies"             "cmd" "test_proxies"             "schedule" .Values.hermes.cron.testProxies.schedule)
+    (dict "name" "detect-anomalies"         "cmd" "detect_anomalies"         "schedule" .Values.hermes.cron.detectAnomalies.schedule)
+    (dict "name" "refresh-current-cheapest" "cmd" "refresh_current_cheapest" "schedule" .Values.hermes.cron.refreshCurrentCheapest.schedule)
+}}
+{{- range $ctx := $contexts }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Release.Name }}-{{ $ctx.name }}
+  labels:
+    {{- include "hermes.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: cron
+spec:
+  schedule: {{ $ctx.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            {{- include "hermes.labels" $ | nindent 12 }}
+            app.kubernetes.io/component: cron
+            cron.hermes/job: {{ $ctx.name }}
+        spec:
+          restartPolicy: Never
+          {{- with $.Values.hermes.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: {{ $ctx.name }}
+              image: {{ include "hermes.image" $ }}
+              imagePullPolicy: {{ $.Values.hermes.image.pullPolicy }}
+              command:
+                - python
+                - manage.py
+                - {{ $ctx.cmd }}
+              env:
+                {{- include "hermes.env" $ | nindent 16 }}
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"
+{{- end }}

@@ -1,19 +1,15 @@
 apiVersion: v2
-name: flyan-data
+name: hermes
 description: Continuous Ryanair price-history scraper and read API (Django + ASGI + TimescaleDB)
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
 maintainers:
-  - name: Victor Brinkhorst
+  - name: Hermes Maintainer
     email: victor@bmlabs.eu
-    url: https://github.com/victorlane
-home: https://github.com/victorlane/flyan-data
 keywords:
-  - flyan
+  - hermes
   - ryanair
   - flights
   - timescaledb
   - scraper
-sources:
-  - https://github.com/victorlane/flyan-data

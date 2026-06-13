@@ -3,10 +3,10 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-api
   labels:
-    {{- include "flyan-data.labels" . | nindent 4 }}
+    {{- include "hermes.labels" . | nindent 4 }}
     app.kubernetes.io/component: api
 spec:
-  replicas: {{ .Values.flyanData.api.replicas }}
+  replicas: {{ .Values.hermes.api.replicas }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Chart.Name }}
@@ -15,54 +15,54 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "flyan-data.labels" . | nindent 8 }}
+        {{- include "hermes.labels" . | nindent 8 }}
         app.kubernetes.io/component: api
       annotations:
-        {{- if .Values.flyanData.metrics.enabled }}
-        {{- toYaml .Values.flyanData.metrics.podAnnotations | nindent 8 }}
+        {{- if .Values.hermes.metrics.enabled }}
+        {{- toYaml .Values.hermes.metrics.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.flyanData.image.pullSecrets }}
+      {{- with .Values.hermes.image.pullSecrets }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
         {{- end }}
       {{- end }}
-      {{- with .Values.flyanData.api.nodeSelector }}
+      {{- with .Values.hermes.api.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.flyanData.api.tolerations }}
+      {{- with .Values.hermes.api.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
         - name: migrate
-          image: {{ include "flyan-data.image" . }}
-          imagePullPolicy: {{ .Values.flyanData.image.pullPolicy }}
+          image: {{ include "hermes.image" . }}
+          imagePullPolicy: {{ .Values.hermes.image.pullPolicy }}
           command: ["python", "manage.py", "migrate", "--noinput"]
           env:
-            {{- include "flyan-data.env" . | nindent 12 }}
+            {{- include "hermes.env" . | nindent 12 }}
       containers:
         - name: api
-          image: {{ include "flyan-data.image" . }}
-          imagePullPolicy: {{ .Values.flyanData.image.pullPolicy }}
+          image: {{ include "hermes.image" . }}
+          imagePullPolicy: {{ .Values.hermes.image.pullPolicy }}
           args:
             - "uvicorn"
-            - "flyan_data.asgi:application"
+            - "hermes.asgi:application"
             - "--host=0.0.0.0"
-            - "--port={{ .Values.flyanData.api.port }}"
-            - "--workers={{ .Values.flyanData.api.workers }}"
+            - "--port={{ .Values.hermes.api.port }}"
+            - "--workers={{ .Values.hermes.api.workers }}"
             - "--proxy-headers"
             - "--forwarded-allow-ips=*"
             - "--access-log"
           ports:
             - name: http
-              containerPort: {{ .Values.flyanData.api.port }}
+              containerPort: {{ .Values.hermes.api.port }}
               protocol: TCP
           env:
-            {{- include "flyan-data.env" . | nindent 12 }}
-            {{- range $k, $v := .Values.flyanData.api.extraEnv }}
+            {{- include "hermes.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.hermes.api.extraEnv }}
             - name: {{ $k }}
               value: {{ $v | quote }}
             {{- end }}
@@ -83,4 +83,4 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 5
           resources:
-            {{- toYaml .Values.flyanData.api.resources | nindent 12 }}
+            {{- toYaml .Values.hermes.api.resources | nindent 12 }}
