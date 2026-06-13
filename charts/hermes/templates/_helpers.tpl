@@ -34,20 +34,20 @@ column 0 so `nindent` at the call site produces uniform indentation.
 - name: {{ $key }}
   value: {{ $value | quote }}
 {{- end }}
-{{- $secrets := list
-    (dict "name" "DATABASE_URL"      "spec" .Values.hermes.secrets.DATABASE_URL)
-    (dict "name" "REDIS_URL"         "spec" .Values.hermes.secrets.REDIS_URL)
-    (dict "name" "DJANGO_SECRET_KEY" "spec" .Values.hermes.secrets.DJANGO_SECRET_KEY)
-}}
-{{- range $s := $secrets }}
-- name: {{ $s.name }}
-{{- if and $s.spec.secretName $s.spec.secretKey }}
+{{- /*
+Every entry under .Values.hermes.secrets becomes an env var with the
+entry's name. Each entry can be either a literal value or a
+(secretName, secretKey) pair pointing at an existing k8s Secret.
+*/ -}}
+{{- range $name, $spec := .Values.hermes.secrets }}
+- name: {{ $name }}
+{{- if and $spec.secretName $spec.secretKey }}
   valueFrom:
     secretKeyRef:
-      name: {{ $s.spec.secretName }}
-      key: {{ $s.spec.secretKey }}
+      name: {{ $spec.secretName }}
+      key: {{ $spec.secretKey }}
 {{- else }}
-  value: {{ $s.spec.value | quote }}
+  value: {{ $spec.value | quote }}
 {{- end }}
 {{- end }}
 {{- /*
