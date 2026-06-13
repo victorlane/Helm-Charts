@@ -687,6 +687,27 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/flyan-data-0.1.0/flyan-data-0.1.0.tgz
     version: 0.1.0
+  hermes:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-13T13:41:07.768442004Z"
+    description: Continuous Ryanair price-history scraper and read API (Django + ASGI
+      + TimescaleDB)
+    digest: fee42ba5c8780b422b81d523ea158e84fad43cabc37f4e49e5a3794bac400909
+    keywords:
+    - hermes
+    - ryanair
+    - flights
+    - timescaledb
+    - scraper
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Hermes Maintainer
+    name: hermes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/hermes-0.1.0/hermes-0.1.0.tgz
+    version: 0.1.0
   n8n:
   - apiVersion: v2
     appVersion: 1.115.1
@@ -816,6 +837,31 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/n8n-1.0.15/n8n-1.0.15.tgz
     version: 1.0.15
+  odyssey:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2026-06-13T13:41:07.910703935Z"
+    description: Retail watcher + resale-signal scorer with Next.js admin UI (Node
+      + Express + TimescaleDB)
+    digest: 6ee90047188d0947f7790d9134051869c5781964d5eff27845960d19c86686bc
+    home: https://github.com/victorlane/Odyssey
+    keywords:
+    - odyssey
+    - scraper
+    - resale
+    - timescaledb
+    - nextjs
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: odyssey
+    sources:
+    - https://github.com/victorlane/Odyssey
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/odyssey-0.1.0/odyssey-0.1.0.tgz
+    version: 0.1.0
   operately:
   - apiVersion: v2
     appVersion: 1.1.0
@@ -881,4 +927,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2026-06-12T20:59:57.537854781Z"
+generated: "2026-06-13T13:41:07.910787101Z"
