@@ -76,6 +76,19 @@ hermes:
         hosts:
           - hermes.example.com
 
+  # Optional: pull discrete POSTGRES_{HOST,PORT,DB,USER,PASSWORD} env
+  # vars from a single Secret with CNPG-shaped keys (host/port/dbname/
+  # user/password). Set secretName to enable; leave empty to skip.
+  # Used when the Django settings module reads POSTGRES_* directly
+  # instead of parsing DATABASE_URL.
+  postgresSecret:
+    secretName: ""
+    hostKey: host
+    portKey: port
+    dbKey: dbname
+    userKey: user
+    passwordKey: password
+
   # All secrets are externalised. The chart never generates a password.
   # Provide either a literal value or a (secretName, secretKey) pair.
   secrets:
