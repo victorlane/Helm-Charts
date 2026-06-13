@@ -690,6 +690,26 @@ entries:
   hermes:
   - apiVersion: v2
     appVersion: 0.1.0
+    created: "2026-06-13T15:56:05.646288594Z"
+    description: Continuous Ryanair price-history scraper and read API (Django + ASGI
+      + TimescaleDB)
+    digest: e7cdbd3fd2c926b116d2e3829210e19943a97fee7e0384b77bd5cf0669fb1269
+    keywords:
+    - hermes
+    - ryanair
+    - flights
+    - timescaledb
+    - scraper
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Hermes Maintainer
+    name: hermes
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/hermes-0.1.1/hermes-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 0.1.0
     created: "2026-06-13T13:41:07.768442004Z"
     description: Continuous Ryanair price-history scraper and read API (Django + ASGI
       + TimescaleDB)
@@ -927,4 +947,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2026-06-13T13:41:07.910787101Z"
+generated: "2026-06-13T15:56:05.646358399Z"
