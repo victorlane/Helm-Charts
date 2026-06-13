@@ -1,0 +1,37 @@
+{{- if .Values.odyssey.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+  {{- with .Values.odyssey.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.odyssey.ingress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.odyssey.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.odyssey.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                # Each path picks api or web via `backend: api|web` in values.
+                # Defaults to web when the field is omitted.
+                name: {{ $.Release.Name }}-{{ default "web" .backend }}
+                port:
+                  number: 80
+          {{- end }}
+    {{- end }}
+{{- end }}

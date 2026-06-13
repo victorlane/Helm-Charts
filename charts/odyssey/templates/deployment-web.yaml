@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.odyssey.web.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: web
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: web
+          image: {{ include "odyssey.webImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.web.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.odyssey.web.port }}
+              protocol: TCP
+          env:
+            - name: PORT
+              value: {{ .Values.odyssey.web.port | quote }}
+            # The Next.js admin proxies API calls to the in-cluster API
+            # service. Browser-side calls go through /api/proxy/* on the
+            # same hostname (no CORS needed); server-side calls hit
+            # ODYSSEY_API_URL directly.
+            - name: ODYSSEY_API_URL
+              value: "http://{{ .Release.Name }}-api.{{ .Release.Namespace }}.svc.cluster.local"
+            - name: NEXT_PUBLIC_API_URL
+              value: ""
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.web.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 5
+          resources:
+            {{- toYaml .Values.odyssey.web.resources | nindent 12 }}

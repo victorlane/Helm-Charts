@@ -1,0 +1,151 @@
+odyssey:
+  # Two images: api (Express + scraper harness + worker entry points) and
+  # web (Next.js admin UI). Tags default to .Chart.AppVersion when blank.
+  image:
+    api:
+      repository: harbor.bmlabs.eu/victorlane/odyssey-api
+      tag: ""
+      pullPolicy: IfNotPresent
+    web:
+      repository: harbor.bmlabs.eu/victorlane/odyssey-web
+      tag: ""
+      pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  # Express API. Backs the admin UI + spawn engine for monitors/scrapers.
+  api:
+    replicas: 1
+    port: 8081
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "768Mi"
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 70
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Next.js admin UI.
+  web:
+    replicas: 1
+    port: 3000
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "384Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Proxy-health worker — long-running probe loop.
+  proxyHealth:
+    enabled: true
+    replicas: 1
+    intervalMs: 900000
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "384Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Scoring worker — runs matchAll → collectAll → scoreAll on a schedule.
+  scoring:
+    enabled: true
+    replicas: 1
+    intervalMs: 3600000
+    skipCollect: false
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "192Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Database migration init container — runs `npm run migrate` against
+  # the Timescale cluster at boot.
+  migrate:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "256Mi"
+
+  # Ingress.
+  #
+  # Odyssey is two services on one hostname. Traefik route ordering is
+  # `/api/*` → api service (port 8081), everything else → web service
+  # (port 3000). The web service makes server-side calls to the api
+  # via ODYSSEY_API_URL (set to the cluster-local Service DNS below).
+  ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    hosts:
+      - host: odyssey.example.com
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: api
+          - path: /
+            pathType: Prefix
+            backend: web
+    tls:
+      - secretName: tls-odyssey
+        hosts:
+          - odyssey.example.com
+
+  # All secrets are externalised. Provide either a literal value or a
+  # (secretName, secretKey) pair.
+  secrets:
+    DATABASE_URL:
+      value: ""
+      secretName: ""
+      secretKey: ""
+    ADMIN_PASSWORD:
+      value: ""
+      secretName: ""
+      secretKey: ""
+    AUTH_SECRET:
+      value: ""
+      secretName: ""
+      secretKey: ""
+
+  env:
+    NODE_ENV: "production"
+    LOG_LEVEL: "info"
+
+  # Prometheus / SigNoz scrape annotations. Odyssey doesn't ship metrics
+  # endpoints yet; flip this to true once the API exposes /metrics so the
+  # cluster discovers it.
+  metrics:
+    enabled: false
+    port: 8081
+    path: /metrics
+    podAnnotations:
+      signoz.io/scrape: "true"
+      signoz.io/port: "8081"
+      signoz.io/path: /metrics

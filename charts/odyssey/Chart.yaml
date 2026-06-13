@@ -1,0 +1,19 @@
+apiVersion: v2
+name: odyssey
+description: Retail watcher + resale-signal scorer with Next.js admin UI (Node + Express + TimescaleDB)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: Victor Brinkhorst
+    email: victor@bmlabs.eu
+    url: https://github.com/victorlane
+home: https://github.com/victorlane/Odyssey
+keywords:
+  - odyssey
+  - scraper
+  - resale
+  - timescaledb
+  - nextjs
+sources:
+  - https://github.com/victorlane/Odyssey
