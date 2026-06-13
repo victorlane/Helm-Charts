@@ -13,6 +13,10 @@ hermes:
     replicas: 2
     workers: 2          # uvicorn --workers
     port: 8000
+    # If set, the API pod runs as this ServiceAccount. Used to give the
+    # /admin page rights to scale the scraper Deployment in/out via the
+    # in-cluster API. Leave empty to fall back to the namespace default.
+    serviceAccountName: ""
     resources:
       requests:
         cpu: "100m"
@@ -51,10 +55,16 @@ hermes:
   cron:
     syncNetwork:
       schedule: "0 2 * * *"     # daily 02:00
+    # Legacy planners. Set schedule to "" to disable; superseded by
+    # plan-continuous when you want every-route, all-the-time coverage.
     planFullSweep:
       schedule: "0 3 * * *"     # daily 03:00
     planHotRoutes:
       schedule: "0 * * * *"     # hourly
+    # Top-up planner: keep the queue at the watermark so the scraper
+    # never sits idle. Off by default; enable for continuous-sweep mode.
+    planContinuous:
+      schedule: ""              # e.g. "* * * * *" for every minute
     testProxies:
       schedule: "*/5 * * * *"
     detectAnomalies:

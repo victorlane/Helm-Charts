@@ -22,6 +22,9 @@ spec:
         {{- toYaml .Values.hermes.metrics.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hermes.api.serviceAccountName }}
+      serviceAccountName: {{ .Values.hermes.api.serviceAccountName }}
+      {{- end }}
       {{- with .Values.hermes.image.pullSecrets }}
       imagePullSecrets:
         {{- range . }}

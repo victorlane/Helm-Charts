@@ -2,11 +2,13 @@
     (dict "name" "sync-network"             "cmd" "sync_network"             "schedule" .Values.hermes.cron.syncNetwork.schedule)
     (dict "name" "plan-full-sweep"          "cmd" "plan_full_sweep"          "schedule" .Values.hermes.cron.planFullSweep.schedule)
     (dict "name" "plan-hot-routes"          "cmd" "plan_hot_routes"          "schedule" .Values.hermes.cron.planHotRoutes.schedule)
+    (dict "name" "plan-continuous"          "cmd" "plan_continuous"          "schedule" .Values.hermes.cron.planContinuous.schedule)
     (dict "name" "test-proxies"             "cmd" "test_proxies"             "schedule" .Values.hermes.cron.testProxies.schedule)
     (dict "name" "detect-anomalies"         "cmd" "detect_anomalies"         "schedule" .Values.hermes.cron.detectAnomalies.schedule)
     (dict "name" "refresh-current-cheapest" "cmd" "refresh_current_cheapest" "schedule" .Values.hermes.cron.refreshCurrentCheapest.schedule)
 }}
 {{- range $ctx := $contexts }}
+{{- if $ctx.schedule }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -56,4 +58,5 @@ spec:
                 limits:
                   cpu: "500m"
                   memory: "512Mi"
+{{- end }}
 {{- end }}
