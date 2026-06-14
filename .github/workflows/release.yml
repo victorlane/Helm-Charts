@@ -23,5 +23,11 @@ jobs:
 
     - name: Run chart-releaser
       uses: helm/chart-releaser-action@v1.7.0
+      with:
+        # Don't fail a re-run on charts whose tag already exists. The
+        # repo has charts at varying versions; chart-releaser checks
+        # every chart on every push, so without this flag a no-bump
+        # commit fails the workflow.
+        skip_existing: true
       env:
         CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
