@@ -26,26 +26,28 @@ Image references. Each container picks one of:
 {{/*
 Shared env block. Renders the static .env map plus secretKeyRef/value
 entries for each secret. Caller indents with `nindent N`.
+
+Secrets iterate over .Values.odyssey.secrets — any key with both
+secretName + secretKey resolves via secretKeyRef; any key with only
+a value resolves to a literal. Keys with neither are skipped so the
+ANTHROPIC-style "optional in dev, required in prod" pattern works
+without a chart change every time.
 */}}
 {{- define "odyssey.env" -}}
 {{- range $key, $value := .Values.odyssey.env }}
 - name: {{ $key }}
   value: {{ $value | quote }}
 {{- end }}
-{{- $secrets := list
-    (dict "name" "DATABASE_URL"    "spec" .Values.odyssey.secrets.DATABASE_URL)
-    (dict "name" "ADMIN_PASSWORD"  "spec" .Values.odyssey.secrets.ADMIN_PASSWORD)
-    (dict "name" "AUTH_SECRET"     "spec" .Values.odyssey.secrets.AUTH_SECRET)
-}}
-{{- range $s := $secrets }}
-- name: {{ $s.name }}
-{{- if and $s.spec.secretName $s.spec.secretKey }}
+{{- range $name, $spec := .Values.odyssey.secrets }}
+{{- if and $spec.secretName $spec.secretKey }}
+- name: {{ $name }}
   valueFrom:
     secretKeyRef:
-      name: {{ $s.spec.secretName }}
-      key: {{ $s.spec.secretKey }}
-{{- else }}
-  value: {{ $s.spec.value | quote }}
+      name: {{ $spec.secretName }}
+      key: {{ $spec.secretKey }}
+{{- else if $spec.value }}
+- name: {{ $name }}
+  value: {{ $spec.value | quote }}
 {{- end }}
 {{- end }}
 {{- end }}

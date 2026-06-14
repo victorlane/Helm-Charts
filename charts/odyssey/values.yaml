@@ -171,6 +171,14 @@ odyssey:
       value: ""
       secretName: ""
       secretKey: ""
+    # Optional. Enables the LLM pack-size classifier + release-scorer
+    # workers. Unset = workers fall back to regex-only / skip scoring
+    # (logged once at boot). Don't set a literal here in prod — wire
+    # via secretName + secretKey to an ExternalSecret.
+    ANTHROPIC_API_KEY:
+      value: ""
+      secretName: ""
+      secretKey: ""
 
   env:
     NODE_ENV: "production"
