@@ -899,6 +899,30 @@ entries:
     version: 1.0.15
   odyssey:
   - apiVersion: v2
+    appVersion: 0.7.1
+    created: "2026-06-14T15:48:35.530761507Z"
+    description: Retail watcher + resale-signal scorer with Next.js admin UI (Node
+      + Express + TimescaleDB)
+    digest: 7d9a6e58c7eda486bfc07cb6e50a577548fce9fc4b9fc786a98a1af6d86946d2
+    home: https://github.com/victorlane/Odyssey
+    keywords:
+    - odyssey
+    - scraper
+    - resale
+    - timescaledb
+    - nextjs
+    maintainers:
+    - email: victor@bmlabs.eu
+      name: Victor Brinkhorst
+      url: https://github.com/victorlane
+    name: odyssey
+    sources:
+    - https://github.com/victorlane/Odyssey
+    type: application
+    urls:
+    - https://github.com/victorlane/Helm-Charts/releases/download/odyssey-0.2.0/odyssey-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2026-06-13T13:41:07.910703935Z"
     description: Retail watcher + resale-signal scorer with Next.js admin UI (Node
@@ -987,4 +1011,4 @@ entries:
     urls:
     - https://github.com/victorlane/Helm-Charts/releases/download/twenty-crm-0.0.1/twenty-crm-0.0.1.tgz
     version: 0.0.1
-generated: "2026-06-13T17:45:13.897786882Z"
+generated: "2026-06-14T15:48:35.530841676Z"
