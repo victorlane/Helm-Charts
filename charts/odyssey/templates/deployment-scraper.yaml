@@ -1,0 +1,56 @@
+{{- if .Values.odyssey.scraper.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-scraper
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: scraper
+spec:
+  # Multiple replicas share work via FOR UPDATE SKIP LOCKED in the
+  # batch-claim query, so you can scale this out horizontally for more
+  # concurrent fetches without watch-row collisions.
+  replicas: {{ .Values.odyssey.scraper.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: scraper
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: scraper
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.scraper.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.scraper.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: scraper
+          image: {{ include "odyssey.apiImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.api.pullPolicy }}
+          command: ["node", "workers/scraper.js"]
+          env:
+            - name: SCRAPER_TICK_MS
+              value: {{ .Values.odyssey.scraper.tickMs | quote }}
+            - name: SCRAPER_BATCH_SIZE
+              value: {{ .Values.odyssey.scraper.batchSize | quote }}
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.scraper.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.odyssey.scraper.resources | nindent 12 }}
+{{- end }}

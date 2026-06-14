@@ -66,6 +66,26 @@ odyssey:
     nodeSelector: {}
     tolerations: []
 
+  # Scraper worker — polls the watches table for ready rows and runs
+  # each engine inline. Replaces the docker-compose-era "one Node process
+  # per watch" pattern (which OOMs the API pod on Kubernetes). Multiple
+  # replicas share load via FOR UPDATE SKIP LOCKED.
+  scraper:
+    enabled: true
+    replicas: 1
+    tickMs: 10000     # poll the watches table every 10s
+    batchSize: 5      # run up to 5 ready watches per tick
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "768Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
   # Scoring worker — runs matchAll → collectAll → scoreAll on a schedule.
   scoring:
     enabled: true
