@@ -1,0 +1,60 @@
+{{- if .Values.odyssey.discovery.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-discovery
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: discovery
+spec:
+  # Discovery worker is the unattended catalog sweep — separate from
+  # the watches-table-driven scraper. Per-site cooldown lives in the
+  # worker's in-memory map; multiple replicas would each sweep every
+  # site independently, so this is intentionally single-replica.
+  # Bump only after moving cooldown state into the DB.
+  replicas: {{ .Values.odyssey.discovery.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: discovery
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: discovery
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.discovery.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.discovery.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: discovery
+          image: {{ include "odyssey.apiImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.api.pullPolicy }}
+          command: ["node", "workers/discovery.js"]
+          env:
+            - name: DISCOVERY_TICK_MS
+              value: {{ .Values.odyssey.discovery.tickMs | quote }}
+            - name: DISCOVERY_BATCH_SIZE
+              value: {{ .Values.odyssey.discovery.batchSize | quote }}
+            - name: SITE_TICK_MIN_MS
+              value: {{ .Values.odyssey.discovery.siteTickMinMs | quote }}
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.discovery.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.odyssey.discovery.resources | nindent 12 }}
+{{- end }}

@@ -86,6 +86,26 @@ odyssey:
     nodeSelector: {}
     tolerations: []
 
+  # Discovery worker — walks every engine's default category on a
+  # staggered loop, building the products catalog without explicit
+  # watches. See workers/discovery.js for the cadence model.
+  discovery:
+    enabled: true
+    replicas: 1
+    tickMs: 30000
+    batchSize: 3
+    siteTickMinMs: 300000
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "1"
+        memory: "768Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
   # Scoring worker — runs matchAll → collectAll → scoreAll on a schedule.
   scoring:
     enabled: true
