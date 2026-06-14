@@ -96,10 +96,11 @@ odyssey:
 
   # Ingress.
   #
-  # Odyssey is two services on one hostname. Traefik route ordering is
-  # `/api/*` → api service (port 8081), everything else → web service
-  # (port 3000). The web service makes server-side calls to the api
-  # via ODYSSEY_API_URL (set to the cluster-local Service DNS below).
+  # All HTTP traffic terminates at the Next.js admin (web service).
+  # The browser-side API client hits /api/proxy/* which Next rewrites
+  # server-side to http://odyssey-api.../api/* (see web/next.config.mjs).
+  # Splitting /api here directly to the api service would intercept
+  # /api/proxy/* before Next's rewrite could run.
   ingress:
     enabled: true
     className: ""
@@ -107,9 +108,6 @@ odyssey:
     hosts:
       - host: odyssey.example.com
         paths:
-          - path: /api
-            pathType: Prefix
-            backend: api
           - path: /
             pathType: Prefix
             backend: web
