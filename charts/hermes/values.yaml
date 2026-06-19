@@ -125,7 +125,11 @@ hermes:
     TASK_CLAIM_BATCH: "32"
     API_MAX_PAGE_SIZE: "1000"
     API_DEFAULT_PAGE_SIZE: "100"
-    POSTGRES_CONN_MAX_AGE: "600"
+    # 0 because prod routes through pgbouncer in transaction mode;
+    # persistent Django connections hold pgbouncer client slots
+    # indefinitely and exhaust max_client_conn. Override to a positive
+    # number only if you connect to Postgres directly without a pooler.
+    POSTGRES_CONN_MAX_AGE: "0"
     # When sitting behind one or more proxies (cert-manager + Traefik in our
     # case), list each hop's IP so ProxyAwareRemoteAddr returns the real
     # client IP for per-IP rate limiting.
