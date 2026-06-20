@@ -123,6 +123,124 @@ odyssey:
     nodeSelector: {}
     tolerations: []
 
+  # FX-rate refresh worker — hourly upsert of EUR-quoted rates from
+  # frankfurter.app. Margin math, cross-EAN floor, and resale-baseline
+  # conversion all read fx_rates; if this worker stops, the
+  # price-watcher logs "fx rate stale" warnings and silently skips EUR
+  # conversion on every alert.
+  fxRates:
+    enabled: true
+    replicas: 1
+    intervalMs: 3600000
+    resources:
+      requests:
+        cpu: "20m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "192Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # EOL-cohort detector — flags EANs going end-of-life via stockout +
+  # negative price slope across ≥3 sites. Drives the price-watcher EOL
+  # badge and downstream alerting.
+  eolWatcher:
+    enabled: true
+    replicas: 1
+    intervalMs: 21600000   # 6h
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "384Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Release-scorer — LLM-backed profitability scorer for upcoming
+  # releases. Bounded by RELEASE_SCORER_DAILY_BUDGET_USD per cycle.
+  releaseScorer:
+    enabled: true
+    replicas: 1
+    intervalMs: 1800000    # 30m
+    batchLimit: 50
+    staleMs: 86400000      # 24h
+    dailyBudgetUsd: 5
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "192Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Release-digest — weekly deep-research Discord digest for the top-N
+  # upcoming releases per category. Cheap inner loop, gated by the
+  # tick interval.
+  releaseDigest:
+    enabled: true
+    replicas: 1
+    tickMs: 300000        # 5m inner poll; the worker decides when to actually post
+    resources:
+      requests:
+        cpu: "20m"
+        memory: "96Mi"
+      limits:
+        cpu: "300m"
+        memory: "256Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Auctions worker — mirror of discovery.js keyed on source_key
+  # (auction houses) instead of site_key. Walks every registered
+  # auction source on a configurable cadence and links lots to
+  # product groups.
+  auctions:
+    enabled: true
+    replicas: 1
+    tickMs: 60000
+    batchSize: 2
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "384Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
+  # Resale-baselines worker — periodically refreshes resale_baselines
+  # rows older than `staleHours` so the scoring + alert-embed layer
+  # always has a non-stale list price per EAN. Without this worker,
+  # `lastResaleBaseline` is null and margin context never reaches the
+  # Discord embed.
+  resaleBaselines:
+    enabled: true
+    replicas: 1
+    intervalMs: 1800000    # 30m
+    staleHours: 24
+    sweepLimit: 200
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "500m"
+        memory: "384Mi"
+    extraEnv: {}
+    nodeSelector: {}
+    tolerations: []
+
   # Database migration init container — runs `npm run migrate` against
   # the Timescale cluster at boot.
   migrate:

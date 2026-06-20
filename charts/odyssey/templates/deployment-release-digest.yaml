@@ -1,0 +1,48 @@
+{{- if .Values.odyssey.releaseDigest.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-release-digest
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: release-digest
+spec:
+  replicas: {{ .Values.odyssey.releaseDigest.replicas }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: release-digest
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: release-digest
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.releaseDigest.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.releaseDigest.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: release-digest
+          image: {{ include "odyssey.apiImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.api.pullPolicy }}
+          command: ["node", "workers/release-digest.js"]
+          env:
+            - name: RELEASE_DIGEST_TICK_MS
+              value: {{ .Values.odyssey.releaseDigest.tickMs | quote }}
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.releaseDigest.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.odyssey.releaseDigest.resources | nindent 12 }}
+{{- end }}
