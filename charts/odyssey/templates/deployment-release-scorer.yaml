@@ -1,0 +1,54 @@
+{{- if .Values.odyssey.releaseScorer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-release-scorer
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: release-scorer
+spec:
+  replicas: {{ .Values.odyssey.releaseScorer.replicas }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: release-scorer
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: release-scorer
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.releaseScorer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.releaseScorer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: release-scorer
+          image: {{ include "odyssey.apiImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.api.pullPolicy }}
+          command: ["node", "workers/release-scorer.js"]
+          env:
+            - name: RELEASE_SCORER_INTERVAL_MS
+              value: {{ .Values.odyssey.releaseScorer.intervalMs | quote }}
+            - name: RELEASE_SCORER_BATCH_LIMIT
+              value: {{ .Values.odyssey.releaseScorer.batchLimit | quote }}
+            - name: RELEASE_SCORER_STALE_MS
+              value: {{ .Values.odyssey.releaseScorer.staleMs | quote }}
+            - name: RELEASE_SCORER_DAILY_BUDGET_USD
+              value: {{ .Values.odyssey.releaseScorer.dailyBudgetUsd | quote }}
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.releaseScorer.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.odyssey.releaseScorer.resources | nindent 12 }}
+{{- end }}

@@ -1,0 +1,50 @@
+{{- if .Values.odyssey.auctions.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-auctions
+  labels:
+    {{- include "odyssey.labels" . | nindent 4 }}
+    app.kubernetes.io/component: auctions
+spec:
+  replicas: {{ .Values.odyssey.auctions.replicas }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: auctions
+  template:
+    metadata:
+      labels:
+        {{- include "odyssey.labels" . | nindent 8 }}
+        app.kubernetes.io/component: auctions
+    spec:
+      {{- include "odyssey.pullSecrets" . | nindent 6 }}
+      {{- with .Values.odyssey.auctions.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.odyssey.auctions.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: auctions
+          image: {{ include "odyssey.apiImage" . }}
+          imagePullPolicy: {{ .Values.odyssey.image.api.pullPolicy }}
+          command: ["node", "workers/auctions.js"]
+          env:
+            - name: AUCTIONS_TICK_MS
+              value: {{ .Values.odyssey.auctions.tickMs | quote }}
+            - name: AUCTIONS_BATCH_SIZE
+              value: {{ .Values.odyssey.auctions.batchSize | quote }}
+            {{- include "odyssey.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.odyssey.auctions.extraEnv }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.odyssey.auctions.resources | nindent 12 }}
+{{- end }}
