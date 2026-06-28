@@ -1,11 +1,12 @@
+{{- $defaultResources := .Values.hermes.cron.resources }}
 {{- $contexts := list
-    (dict "name" "sync-network"             "cmd" "sync_network"             "schedule" .Values.hermes.cron.syncNetwork.schedule)
-    (dict "name" "plan-full-sweep"          "cmd" "plan_full_sweep"          "schedule" .Values.hermes.cron.planFullSweep.schedule)
-    (dict "name" "plan-hot-routes"          "cmd" "plan_hot_routes"          "schedule" .Values.hermes.cron.planHotRoutes.schedule)
-    (dict "name" "plan-continuous"          "cmd" "plan_continuous"          "schedule" .Values.hermes.cron.planContinuous.schedule)
-    (dict "name" "test-proxies"             "cmd" "test_proxies"             "schedule" .Values.hermes.cron.testProxies.schedule)
-    (dict "name" "detect-anomalies"         "cmd" "detect_anomalies"         "schedule" .Values.hermes.cron.detectAnomalies.schedule)
-    (dict "name" "refresh-current-cheapest" "cmd" "refresh_current_cheapest" "schedule" .Values.hermes.cron.refreshCurrentCheapest.schedule)
+    (dict "name" "sync-network"             "cmd" "sync_network"             "schedule" .Values.hermes.cron.syncNetwork.schedule             "resources" (.Values.hermes.cron.syncNetwork.resources             | default $defaultResources))
+    (dict "name" "plan-full-sweep"          "cmd" "plan_full_sweep"          "schedule" .Values.hermes.cron.planFullSweep.schedule          "resources" (.Values.hermes.cron.planFullSweep.resources          | default $defaultResources))
+    (dict "name" "plan-hot-routes"          "cmd" "plan_hot_routes"          "schedule" .Values.hermes.cron.planHotRoutes.schedule          "resources" (.Values.hermes.cron.planHotRoutes.resources          | default $defaultResources))
+    (dict "name" "plan-continuous"          "cmd" "plan_continuous"          "schedule" .Values.hermes.cron.planContinuous.schedule          "resources" (.Values.hermes.cron.planContinuous.resources          | default $defaultResources))
+    (dict "name" "test-proxies"             "cmd" "test_proxies"             "schedule" .Values.hermes.cron.testProxies.schedule             "resources" (.Values.hermes.cron.testProxies.resources             | default $defaultResources))
+    (dict "name" "detect-anomalies"         "cmd" "detect_anomalies"         "schedule" .Values.hermes.cron.detectAnomalies.schedule         "resources" (.Values.hermes.cron.detectAnomalies.resources         | default $defaultResources))
+    (dict "name" "refresh-current-cheapest" "cmd" "refresh_current_cheapest" "schedule" .Values.hermes.cron.refreshCurrentCheapest.schedule "resources" (.Values.hermes.cron.refreshCurrentCheapest.resources | default $defaultResources))
 }}
 {{- range $ctx := $contexts }}
 {{- if $ctx.schedule }}
@@ -52,11 +53,6 @@ spec:
               env:
                 {{- include "hermes.env" $ | nindent 16 }}
               resources:
-                requests:
-                  cpu: "50m"
-                  memory: "128Mi"
-                limits:
-                  cpu: "500m"
-                  memory: "512Mi"
+                {{- toYaml $ctx.resources | nindent 16 }}
 {{- end }}
 {{- end }}

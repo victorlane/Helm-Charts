@@ -53,6 +53,20 @@ hermes:
   # CronJobs that plan work and refresh derived tables. Disable individually
   # if you want to drive them externally.
   cron:
+    # Default resources for every cronjob. Lowered from 500m → 200m limit
+    # after a single cronjob burst (test_proxies: many proxy HTTP probes in
+    # parallel) was pushing cx33 workers to 90%+ saturation, starving kubelet
+    # and tipping the node to NotReady. 200m caps a single job at 5% of
+    # node CPU, which the scheduler + kubelet can comfortably absorb even
+    # under concurrent cilium WireGuard load. Override per-job below if a
+    # specific cronjob legitimately needs more.
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "128Mi"
+      limits:
+        cpu: "200m"
+        memory: "512Mi"
     syncNetwork:
       schedule: "0 2 * * *"     # daily 02:00
     # Legacy planners. Set schedule to "" to disable; superseded by
@@ -65,12 +79,15 @@ hermes:
     # never sits idle. Off by default; enable for continuous-sweep mode.
     planContinuous:
       schedule: ""              # e.g. "* * * * *" for every minute
+    # Offset the every-10-min jobs by 5 minutes so testProxies and
+    # refreshCurrentCheapest don't fire on the same tick (their combined
+    # CPU+egress burst is what kept tipping cx33 workers into NotReady).
     testProxies:
-      schedule: "*/5 * * * *"
+      schedule: "0,10,20,30,40,50 * * * *"
     detectAnomalies:
-      schedule: "*/15 * * * *"
+      schedule: "*/30 * * * *"
     refreshCurrentCheapest:
-      schedule: "*/5 * * * *"
+      schedule: "5,15,25,35,45,55 * * * *"
 
   ingress:
     enabled: true
